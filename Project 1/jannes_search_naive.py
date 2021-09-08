@@ -47,11 +47,17 @@ def naive_matching(x, p):
     while j <= len(rseq) - 1:
         if substring[i] != rseq[j]:
 
-            # Reset i, currentstr, and pos, but increment j
-            j += 1
-            i = 0
-            currentstr = ''
-            pos = 0
+            # Reset i, currentstr, and pos, but increment j if we haven't found any matches yet
+            if len(currentstr) == 0:
+                j += 1
+                i = 0
+                currentstr = ''
+                pos = 0
+            # If we have found some matches, don't increment j
+            else: 
+                i = 0
+                currentstr = ''
+                pos = 0
 
         elif substring[i] == rseq[j]:
 
@@ -73,14 +79,15 @@ def naive_matching(x, p):
                 currentstr = ''
             
             else:
-                # If we haven't yet found the full substring, increment i and continue matching
+                # If we haven't yet found the full substring, increment i and j and continue matching
                 i += 1
+                j += 1
             
-            j += 1
+            
 
-# for item in fastq.items():
-#     for seqs in fasta.items():
-#         naive_matching(seqs, item)
+for item in fastq.items():
+    for seqs in fasta.items():
+        naive_matching(seqs, item)
 
 # Search function
 def naive_matching_ez(x, p):
@@ -105,6 +112,6 @@ def naive_matching_ez(x, p):
     for match in re.finditer(substring, rseq):
         print(qname, flag, rname, match.start() + 1, mapq, cigar, rnext, pnext, tlen, substring, qual)
 
-for item in fastq.items():
-    for seqs in fasta.items():
-        naive_matching_ez(seqs, item)
+# for item in fastq.items():
+#     for seqs in fasta.items():
+#         naive_matching_ez(seqs, item)
