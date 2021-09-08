@@ -1,0 +1,8 @@
+Tasks
+
+1 Troubleshoot jannes search_naive
+2 Make script which can generate FASTA and FASTQ files to use for time analysis
+3 Make time analysis of search_naive
+4 Implement advanced search algorithm
+5 Make time analysis of 4
+6 Write report
