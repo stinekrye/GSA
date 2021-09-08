@@ -1,0 +1,33 @@
+Beginning:
+ssippi
+mississippi
+
+Partial match:
+  ssippi
+mississippi
+
+The following iterations:
+
+      ssippi
+mississippi
+
+       ssippi
+mississippi
+
+        ssippi
+mississippi
+
+         ssippi
+mississippi
+
+and so on
+
+What we want to happen:
+
+Partial match:
+  ssippi
+mississippi
+
+Next iteration
+   ssippi
+mississippi
