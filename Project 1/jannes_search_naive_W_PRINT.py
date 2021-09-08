@@ -1,7 +1,7 @@
 from read_fasta import read_fasta_file
 from read_fastq import read_fastq_file
 import argparse, re
- 
+
 # Initialize parser
 parser = argparse.ArgumentParser(description='A naive approach for exact pattern matching')
 
@@ -21,9 +21,9 @@ args = parser.parse_args()
 fasta = read_fasta_file(args.fastafile)
 fastq = read_fastq_file(args.fastqfile)
 
+
 # Search function
 def naive_matching(x, p):
-
     # Definitions for the SAM format
     qname = p[0]
     flag = 0
@@ -43,16 +43,32 @@ def naive_matching(x, p):
     currentstr = ''
 
     # Find exact match
+    print("substring", substring)
+    print("rseq", rseq)
     while j < len(rseq):
+        counter = 0
+        print("i,j", i, j)
+        print("substring[i]", substring[i])
+        print("rseq[j]", rseq[j])
         if substring[i] != rseq[j]:
+            print("counter", counter)
 
-            # Reset i, currentstr, and pos, but increment j
-            j += 1
-            i = 0
-            currentstr = ''
-            pos = 0
+            if counter <= 1:  # if match is larger than 1
+                # Reset i, currentstr, and pos, but increment j
+                j += 1
+                i = 0
+                currentstr = ''
+                pos = 0
+
+            else:
+
+                j += 1
+                i = 0
+                currentstr = ''
+                pos = 0
 
         elif substring[i] == rseq[j]:
+            counter += 1
 
             # If it's the first match, update the pos variable
             if pos == 0:
@@ -70,20 +86,22 @@ def naive_matching(x, p):
                 i = 0
                 pos = 0
                 currentstr = ''
-            
+
             else:
                 # If we haven't yet found the full substring, increment i and continue matching
                 i += 1
-            
+
             j += 1
+
 
 for item in fastq.items():
     for seqs in fasta.items():
+        # print(item)
         naive_matching(seqs, item)
+
 
 # Search function
 def naive_matching_ez(x, p):
-
     # Definitions for the SAM format
     qname = p[0]
     flag = 0
@@ -107,3 +125,4 @@ def naive_matching_ez(x, p):
 # for item in fastq.items():
 #     for seqs in fasta.items():
 #         naive_matching_ez(seqs, item)
+
