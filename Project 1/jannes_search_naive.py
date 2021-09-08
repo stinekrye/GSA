@@ -77,9 +77,9 @@ def naive_matching(x, p):
             
             j += 1
 
-# for item in fastq.items():
-#     for seqs in fasta.items():
-#         naive_matching(seqs, item)
+for item in fastq.items():
+    for seqs in fasta.items():
+        naive_matching(seqs, item)
 
 # Search function
 def naive_matching_ez(x, p):
@@ -104,6 +104,6 @@ def naive_matching_ez(x, p):
     for match in re.finditer(substring, rseq):
         print(qname, flag, rname, match.start() + 1, mapq, cigar, rnext, pnext, tlen, substring, qual)
 
-for item in fastq.items():
-    for seqs in fasta.items():
-        naive_matching_ez(seqs, item)
+# for item in fastq.items():
+#     for seqs in fasta.items():
+#         naive_matching_ez(seqs, item)
