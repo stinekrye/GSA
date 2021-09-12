@@ -6,11 +6,11 @@ import argparse
 parser = argparse.ArgumentParser(description='A naive approach for exact pattern matching')
 
 # Add arguments
-fasta = parser.add_argument(
+parser.add_argument(
     'fastafile',
     help="Input fasta file"
 )
-fastq = parser.add_argument(
+parser.add_argument(
     'fastqfile',
     help="Input fastq file"
 )
@@ -83,5 +83,5 @@ def naive_matching(x, p):
                 j += 1
 
 for item in fastq.items():
-    for seqs in fasta.items():
-        naive_matching(seqs, item)
+    for seq in fasta.items():
+        naive_matching(seq, item)
