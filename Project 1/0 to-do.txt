@@ -4,7 +4,7 @@ Tasks
 2 Make script which can generate FASTA and FASTQ files to use for time analysis
    - Fasta (Max)
    - FastQ (Janne)
-3 Make time analysis of search_naive
+3 Make time analysis of search_naive (x-axis is n length of ref sequence, each line is m (length of pattern))
 4 Implement advanced search algorithm
 5 Make time analysis of 4
 6 Write report
