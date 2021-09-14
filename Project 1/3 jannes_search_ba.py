@@ -26,13 +26,13 @@ def borderarray(x):
     ba = [0] * len(x)
     for i in range(1, len(x)):
         b = ba[i - 1]
-        # while b > 0:
+        # if x[i] == x[b]:
+        #     ba[i] = b + 1
+
+        while b > 0 and x[i] != x[b]:
+            b = ba[b - 1]
         if x[i] == x[b]:
             ba[i] = b + 1
-
-        # while b > 0 and x[i] != x[b]:
-        #     b = ba[i - 1]
-        # ba[i] = b + 1
 
     return ba
 
