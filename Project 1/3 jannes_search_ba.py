@@ -2,24 +2,24 @@ from read_fasta import read_fasta_file
 from read_fastq import read_fastq_file
 import argparse
  
-# # Initialize parser
-# parser = argparse.ArgumentParser(description='Using border arrays for exact pattern matching')
+# Initialize parser
+parser = argparse.ArgumentParser(description='Using border arrays for exact pattern matching')
 
-# # Add arguments
-# parser.add_argument(
-#     'fastafile',
-#     help="Input fasta file"
-# )
-# parser.add_argument(
-#     'fastqfile',
-#     help="Input fastq file"
-# )
+# Add arguments
+parser.add_argument(
+    'fastafile',
+    help="Input fasta file"
+)
+parser.add_argument(
+    'fastqfile',
+    help="Input fastq file"
+)
 
-# args = parser.parse_args()
+args = parser.parse_args()
 
-# # Read in files
-# fasta = read_fasta_file(args.fastafile)
-# fastq = read_fastq_file(args.fastqfile)
+# Read in files
+fasta = read_fasta_file(args.fastafile)
+fastq = read_fastq_file(args.fastqfile)
 
 # Border array function
 def borderarray(x):
@@ -37,7 +37,32 @@ def borderarray(x):
     return ba
 
 # Search function
-def search_ba(x):
-    return
+def search_ba(x, p):
+    # Definitions for the SAM format
+    qname = p[0]
+    flag = 0
+    rname = x[0]
+    pos = 0
+    mapq = 0
+    substring = p[1][0]
+    cigar = str(len(substring)) + 'M'
+    rnext = '*'
+    pnext = 0
+    tlen = 0
+    qual = p[1][1]
 
-print(borderarray('abcab'))
+    # Other definitions
+    rseq = x[1]
+    m = len(substring)
+    s = substring + '$' + rseq
+    b = borderarray(s)
+
+    for i in range(len(b)):
+        if b[i] == m:
+            pos = i - 2 * m + 1
+            print(qname, flag, rname, pos, mapq, cigar, rnext, pnext, tlen, substring, qual)
+            pos = 0
+
+for item in fastq.items():
+    for seq in fasta.items():
+        search_ba(seq, item)
