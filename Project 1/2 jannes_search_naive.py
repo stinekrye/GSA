@@ -5,21 +5,21 @@ import argparse
 # Initialize parser
 parser = argparse.ArgumentParser(description='A naive approach for exact pattern matching')
 
-# Add arguments
-parser.add_argument(
-    'fastafile',
-    help="Input fasta file"
-)
-parser.add_argument(
-    'fastqfile',
-    help="Input fastq file"
-)
+# # Add arguments
+# parser.add_argument(
+#     'fastafile',
+#     help="Input fasta file"
+# )
+# parser.add_argument(
+#     'fastqfile',
+#     help="Input fastq file"
+# )
 
-args = parser.parse_args()
+# args = parser.parse_args()
 
-# Read in files
-fasta = read_fasta_file(args.fastafile)
-fastq = read_fastq_file(args.fastqfile)
+# # # Read in files
+# fasta = read_fasta_file(args.fastafile)
+# fastq = read_fastq_file(args.fastqfile)
 
 # Search function
 def naive_matching(x, p):
@@ -82,6 +82,6 @@ def naive_matching(x, p):
                 i += 1
                 j += 1
 
-for item in fastq.items():
-    for seq in fasta.items():
-        naive_matching(seq, item)
+# for item in fastq.items():
+#     for seq in fasta.items():
+#         naive_matching(seq, item)
