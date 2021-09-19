@@ -82,6 +82,14 @@ def naive_matching(x, p):
                 i += 1
                 j += 1
 
+
+def naive_search(x,p):
+    result = []
+    res = naive_matching(x,p)
+    for value in res:
+        result.append(value)
+    return "\n".join(result)
+
 # for item in fastq.items():
 #     for seq in fasta.items():
 #         naive_matching(seq, item)

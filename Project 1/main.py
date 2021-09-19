@@ -1,4 +1,4 @@
-from search_naive_stine import naive_matching
+from search_naive_stine import naive_search
 import unittest
 import random
 random.seed(2)
@@ -24,33 +24,25 @@ def fastq(dna): # Third row with + is omitted, because it is excluded by fastq r
 fasta = dna(20)
 idx = random.randrange(5,len(fasta[1]),5)
 seq1 = fasta[:5]
+
+x = fasta
 p = fastq(seq1)
 real_res1 = "@Seq 0 seq 1 0 20M * 0 0 AACCATTGTTTCGGTAATGG ~~~~~~~~~~~~~~~~~~~~"
 
 seq2 = fasta[-5:]
 seq3 = fasta[idx:idx+6]
 
-
-
+test_res = naive_search(x, p)
 
 # print(p[1][1])
 
-test = []
-res = naive_matching(fasta,p)
-for value in res:
-    test.append(value)
-test = "\n".join(test)
-print(test)
-
 
 class TestNaive(unittest.TestCase):
-    def TestBeginning(self,real_res1):
-        iterator = naive_matching(fasta,p)
-        test_res = []
-        for value in iterator:
-            test_res.append(value)
-        test_res = "\n".join(test_res)
+    def TestBeginning(self):
+        test_res = naive_search(x,p)
         self.assertEqual(test_res, real_res1)
+    def Test(self):
+        self.assertEqual("1","2")
 
 if __name__ == '__main__':
     unittest.main()
