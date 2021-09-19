@@ -34,15 +34,14 @@ seq3 = fasta[idx:idx+6]
 
 test_res = naive_search(x, p)
 
-# print(p[1][1])
 
 
 class TestNaive(unittest.TestCase):
-    def TestBeginning(self):
-        test_res = naive_search(x,p)
-        self.assertEqual(test_res, real_res1)
-    def Test(self):
-        self.assertEqual("1","2")
+   def TestBeginning(self):
+       test_res = naive_search(x,p)
+       self.assertEqual(test_res, real_res1)
+   def Test(self):
+       self.assertEqual(1,2)
 
 if __name__ == '__main__':
-    unittest.main()
+   unittest.main()
