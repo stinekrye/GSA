@@ -70,7 +70,7 @@ def naive_matching(x, p):
             if currentstr == substring:
 
                 # If we've matched the full substring, print the SAM information
-                return "{} {} {} {} {} {} {} {} {} {} {}".format(qname, flag, rname, pos, mapq, cigar, rnext, pnext, tlen, substring, qual)
+                yield "{} {} {} {} {} {} {} {} {} {} {}".format(qname, flag, rname, pos, mapq, cigar, rnext, pnext, tlen, substring, qual)
 
                 # And reset i, currentstr, and pos
                 i = 0
