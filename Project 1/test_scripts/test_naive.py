@@ -1,4 +1,4 @@
-from test_scripts.search_ba_stine import ba_search
+from search_ba_stine import ba_search
 import random
 random.seed(2)
 
