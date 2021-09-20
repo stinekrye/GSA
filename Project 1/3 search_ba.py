@@ -1,6 +1,6 @@
 from read_fasta import read_fasta_file
 from read_fastq import read_fastq_file
-import argparse
+import argparse, sys
  
 # Initialize parser
 parser = argparse.ArgumentParser(description='Using border arrays for exact pattern matching')
@@ -57,7 +57,9 @@ def search_ba(x, p):
     for i in range(len(b)):
         if b[i] == m:
             pos = i - 2 * m + 1
-            print(qname, flag, rname, pos, mapq, cigar, rnext, pnext, tlen, substring, qual)
+            print(
+                qname, flag, rname, pos, mapq, cigar, rnext, pnext, tlen, substring, qual, 
+                file = sys.stdout)
             pos = 0
 
 for item in fastq.items():
