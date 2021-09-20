@@ -1,6 +1,6 @@
 from read_fasta import read_fasta_file
 from read_fastq import read_fastq_file
-import argparse
+import argparse, sys
  
 # Initialize parser
 parser = argparse.ArgumentParser(description='A naive approach for exact pattern matching')
@@ -70,7 +70,10 @@ def naive_matching(x, p):
             if currentstr == substring:
 
                 # If we've matched the full substring, print the SAM information
-                print(qname, flag, rname, pos, mapq, cigar, rnext, pnext, tlen, substring, qual)
+                print(
+                    qname, flag, rname, pos, mapq, cigar, rnext, pnext, tlen, substring, qual,
+                    file = sys.stdout
+                )
 
                 # And reset i, currentstr, and pos
                 i = 0
