@@ -24,10 +24,19 @@ parser = argparse.ArgumentParser(description='A naive approach for exact pattern
 
 # Search function
 def naive_matching(x, p):
-    # Definitions for the SAM format
-    qname = p[0]
+    try:
+        rname = x[0]
+    except IndexError:
+       # print("Check your fasta file for errors")
+        raise
+
+    try:
+        qname = p[0]
+    except IndexError:
+       # print("Check your fasta file for errors")
+        raise
+  #  Definitions for the SAM format
     flag = 0
-    rname = x[0]
     pos = 0
     mapq = 0
     substring = p[1][0]
