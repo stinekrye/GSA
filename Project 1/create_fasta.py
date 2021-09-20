@@ -30,7 +30,7 @@ f = open(f"{args.outputname}.fasta", "w")
 
 for i in range(args.number):
     f.write(
-        'Seq' + str(i + 1) + '\n' +
+        '>Seq' + str(i + 1) + '\n' +
         dna(args.n) + '\n'
     )
 
