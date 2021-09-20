@@ -1,8 +1,14 @@
+# https://www.jetbrains.com/help/pycharm/testing-your-first-python-application.html#write-test
+# https://docs.python.org/3/library/unittest.html
+# https://www.geeksforgeeks.org/test-if-a-function-throws-an-exception-in-python/
+
 from unittest import TestCase
 from search_ba_stine import ba_search
 import random
 random.seed(367)
 # Fails when has to deal with two or more matches. Problems with the way I have defined the result. This will be easier, when I can use this alg as "expected result"
+
+
 
 #%%  Helper functions
 def dna(length=int(), letters="CGTA"):
