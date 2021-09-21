@@ -76,6 +76,7 @@ def naive_matching(x, p):
                 )
 
                 # And reset i, currentstr, and pos
+                j = pos
                 i = 0
                 pos = 0
                 currentstr = ''
