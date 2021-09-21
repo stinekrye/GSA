@@ -47,6 +47,24 @@ p4 = fastq(seq3)
 x5 = dna(20)
 p5 = ""
 
+#%% Test 6 multiple hits
+x6 = ["seq", "AGCTAGCTCCCCCCAGCT"]
+seq6 = "AGCT"
+p6 = fastq(seq6)
+hit = [0,4,14]
+real_res6 = f"@Seq 0 seq {hit[0]+1} 0 {len(seq6)}M * 0 0 {seq6} {'~' * len(seq6)}\n" \
+            f"@Seq 0 seq {hit[1]+1} 0 {len(seq6)}M * 0 0 {seq6} {'~' * len(seq6)}\n" \
+            f"@Seq 0 seq {hit[2]+1} 0 {len(seq6)}M * 0 0 {seq6} {'~' * len(seq6)}"
+
+#%% Test 7 multiple overlapping hits
+x7 = ["seq", "AGAGAGACCCCCCAGAG"]
+seq7 = "AGAG"
+p7 = fastq(seq7)
+hit = [0,2,13]
+real_res7 = f"@Seq 0 seq {hit[0]+1} 0 {len(seq7)}M * 0 0 {seq7} {'~' * len(seq7)}\n" \
+            f"@Seq 0 seq {hit[1]+1} 0 {len(seq7)}M * 0 0 {seq7} {'~' * len(seq7)}\n" \
+            f"@Seq 0 seq {hit[2]+1} 0 {len(seq7)}M * 0 0 {seq7} {'~' * len(seq7)}"
+
 
 class TestRandom(TestCase):
     def testBeginning(self):
@@ -64,3 +82,9 @@ class TestRandom(TestCase):
     def testEmptyFastq(self):
         with self.assertRaises(IndexError):
             naive_search(x5, p5)
+    def testMultiple(self):
+        test_res6 = naive_search(x6,p6)
+        self.assertEqual(test_res6,real_res6)
+    def testOverlap(self):
+        test_res7 = naive_search(x7, p7)
+        self.assertEqual(test_res7, real_res7)
