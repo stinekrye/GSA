@@ -83,8 +83,10 @@ def naive_matching(x, p):
 
                 # And reset i, currentstr, and pos
                 i = 0
+                j = pos
                 pos = 0
                 currentstr = ''
+
 
             else:
                 # If we haven't yet found the full substring, increment i and j and continue matching
