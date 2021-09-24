@@ -2,24 +2,24 @@ from read_fasta import read_fasta_file
 from read_fastq import read_fastq_file
 import argparse, sys
 
-# # Initialize parser
-# parser = argparse.ArgumentParser(description='A naive approach for exact pattern matching')
-#
-# # Add arguments
-# parser.add_argument(
-#     'fastafile',
-#     help="Input fasta file"
-# )
-# parser.add_argument(
-#     'fastqfile',
-#     help="Input fastq file"
-# )
-#
-# args = parser.parse_args()
-#
-# # Read in files
-# fasta = read_fasta_file(args.fastafile)
-# fastq = read_fastq_file(args.fastqfile)
+# Initialize parser
+parser = argparse.ArgumentParser(description='A naive approach for exact pattern matching')
+
+# Add arguments
+parser.add_argument(
+    'fastafile',
+    help="Input fasta file"
+)
+parser.add_argument(
+    'fastqfile',
+    help="Input fastq file"
+)
+
+args = parser.parse_args()
+
+# Read in files
+fasta = read_fasta_file(args.fastafile)
+fastq = read_fastq_file(args.fastqfile)
 
 
 
@@ -44,11 +44,7 @@ def naive_matching(x, p):
         else:
             j += 1
 
-# x = "mississippi"
-# p = "iss"
-# test = naive_matching(x,p)
-# # for match in test:
-# #     print(match)
+
 
 # Wrapper function
 def search_naive(fasta,fastq):
@@ -72,6 +68,4 @@ def search_naive(fasta,fastq):
                 pos = match[0]+1
                 print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}\t", file = sys.stdout)
 
-# fasta = read_fasta_file(f"fasta_test.fasta")
-# fastq = read_fastq_file(f"fastq_test.fastq")
-# search_naive(fasta,fastq)
+search_naive(fasta,fastq)
