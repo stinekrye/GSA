@@ -44,7 +44,7 @@ def naive_matching(x, p):
         currentstr = ''
 
         # Find exact match
-        while j <= len(rseq) - 1:
+        while j < len(rseq):
             if substring[i] != rseq[j]:
 
                 # Reset i, currentstr, and pos, but increment j if we haven't found any matches yet
