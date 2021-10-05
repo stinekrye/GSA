@@ -33,7 +33,7 @@ class SuffixTree():
         i = 0
         c = self.root
 
-        while i < 2:
+        while i < 2:                # Change this to iterate through the full sequence when done
             naive_insert(self,c,x,i,n) # input = suffix tree, root to search from, x (incrementor), i = string label. n+1 = length of sequence
             i + = 1
 
