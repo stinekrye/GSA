@@ -34,7 +34,7 @@ class SuffixTree():
         c = self.root
 
         while i < 2:
-            naive_insert(self,x,i,n+1)
+            naive_insert(self,c,x,i,n) # input = suffix tree, root to search from, x (incrementor), i = string label. n+1 = length of sequence
             i + = 1
 
-    def naive_insert(self,x,i,n):
+    def naive_insert(self,c,x,i,n):
