@@ -32,6 +32,7 @@ class SuffixTree():
         char = self.seq[x + i]
         new = Node(range_start=i + x, range_end=n, string_label=i, parent = c, children=[None, None, None, None, None])
         c.children[char] = new
+        return
 
 
     def split_edge(self,c,x,i,n):
@@ -42,11 +43,12 @@ class SuffixTree():
         c.range_start = i + x                                                           # update the range of c to start where u ends
         c_char = self.seq[c.range_start]                                                # find the new beginning character of c
         u.children[c_char] = c                                                          # set c to be the child of u at the right place in the list using the first character of c
+        return u
 
     def naive_insert(self, c, x, i, n):
         child = self.find_edge(c, x, i)
         if child:  # If we have an outgoing edge
-            while x + i < child.range_end and self.seq[child.range_start + x] == self.seq[i+k]:  # If we have have not reached the end of the edge yet and we can extend the match
+            while x + i < child.range_end and self.seq[child.range_start + x] == self.seq[i+x]:  # If we have have not reached the end of the edge yet and we can extend the match
                 x += 1
             if x + i == child.range_end:  # if we reach the end of the edge, we have to find the new outgoing edge to search from
                 self.naive_insert(child, x, i, n)
@@ -73,13 +75,13 @@ class SuffixTree():
         self.root.children[char] = new
         i += 1
 
-        c = self.root
-        while i < 3:                                                                    # Change this to iterate through the full sequence when done
-            self.naive_insert(c,x,i,n)                                                  # input = suffix tree, root to search from, x (incrementor), i = string label. n+1 = length of sequence
+
+        while i < len(y):                                                                    # Change this to iterate through the full sequence when done
+            self.naive_insert(self.root,x,i,n)                                                  # input = suffix tree, root to search from, x (incrementor), i = string label. n+1 = length of sequence
             i += 1
 
 
-x = "GTCGCA"
+x = "GTCGTAGTC"
 
 
 res = SuffixTree()
