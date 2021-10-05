@@ -6,7 +6,7 @@ def remap(x):
 
 
 class Node():
-    def __init__(self, range_start = None, range_end = None, string_label = None, children = None, parent = None):
+    def __init__(self, range_start = None, range_end = None, string_label = None, children = [None]*5, parent = None):
         self.range_start = range_start
         self.range_end = range_end
         self.string_label = string_label
@@ -17,3 +17,11 @@ class Node():
         rep = f"Node({self.range_start},{self.range_end})"
         return rep
 
+class SuffixTree():
+
+    def __init__(self, seq = None):
+        self.seq = seq
+        self.root = Node()
+        self.root.parent = self.root
+
+    def insert(self, x):
