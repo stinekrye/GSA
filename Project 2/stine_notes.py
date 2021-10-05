@@ -2,7 +2,7 @@
 def remap(x):
     m = {a:i+1 for i,a in enumerate(sorted(set(x)))}
     n = [m[a] for a in x]
-    return n, len(m)
+    return n
 
 
 class Node():
@@ -25,3 +25,16 @@ class SuffixTree():
         self.root.parent = self.root
 
     def insert(self, x):
+        self.seq = remap(x)
+        self.seq = self.seq + "0"
+        n = len(self.seq)
+
+        x = 0
+        i = 0
+        c = self.root
+
+        while i < 2:
+            naive_insert(self,x,i,n+1)
+            i + = 1
+
+    def naive_insert(self,x,i,n):
