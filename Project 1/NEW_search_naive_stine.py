@@ -66,6 +66,6 @@ def search_naive(fasta,fastq):
 
             for match in matches:
                 pos = match[0]+1
-                print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}\t", file = sys.stdout)
+                print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
 
 search_naive(fasta,fastq)
