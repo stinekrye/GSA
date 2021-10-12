@@ -30,38 +30,42 @@ class SuffixTree():
     def insert_suffix(self, string):
         self.seq = remap(string) + "0" #add sentinel
 
-        start = 0
-        end = len(self.seq)
+        start = 0 #x for stine
+        end = len(self.seq) #n for stine
         i = 0
 
         #First suffix
-        first = Node(range_start = start, range_end = end, string_label = i, parent = self.root, children = [None, None, None, None, None])
-        self.root.children = first
+        char = self.seq[start + i] #First character in the sequence
+        first = Node(range_start = start + i, range_end = end, string_label = i, parent = self.root, children = [None, None, None, None, None])
+        self.root.children[char] = first #Assigns the first Node as a Child to the root for the corresponding character
 
         #Insert the rest
         for i in range(1, end):
-            self.naive_insert()
+            self.naive_insert(self.root, v, start, end)
 
 
-    def naive_insert(self, st, v, start, end): #suffix tree, node to search from (root), start, end
-        w = self.find_outgoing_edge(v, start)
-        if w:
+    def naive_insert(self, st, v, start, end, i): #suffix tree, node to search from (root), start, end
+        w = self.find_outgoing_edge(st, v, start, i)
+        if w: #If there is an outgoing edge
+            while start + i < w.range_end and self.seq[w.range_start + start] == self.seq[start + i] #While scanning through the out edge
+                start += 1
+                if start + i == w.range_end: #If we reach the end of the edge, we must continue from there
+                    self.naive_insert(w, start, end, i )
+
 
         else: #If there is no outgoing edge that matches, we insert child here
-            self.insert_child(v, start, end)
+            self.insert_child(v, start, end, i)
 
 
-    def find_outgoing_edge(self, v, start):
-        w = v.children
-        while w:
-            if w.range_start == start:
-                break
-            else:
-                w = w. #????????
+    def find_outgoing_edge(self, v, start, i):
+        char = self.seq[start + i]
+        return v.children[char]
 
 
-    def insert_child(self, v, start, end):
-        child = Node(range_start = start, range_end = end, string_label = 1, parent = v) # LAbels??
+    def insert_child(self, v, start, end, i):
+        char = self.seq[start + i]
+        child = Node(range_start = start + i, range_end = end, string_label = i, parent = v, children = [None, None, None, None, None])
+        v.children[char] = child
         return child
 
 
