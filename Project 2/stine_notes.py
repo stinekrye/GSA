@@ -9,12 +9,12 @@ def remap(x):
 def return_labels(node):
     if node.string_label != None:
         a = node.string_label
-        return a
+        yield a
     else:
         for child in node.children:
             if child != None:
                 if child.string_label != None:
-                    return child.string_label
+                    yield child.string_label
                 else:
                     return_labels(child)
 
@@ -103,13 +103,13 @@ class SuffixTree():
     def search_rec(self,c,x,n):
         child = self.find_edge_search(c, n[x])
         if child:  # If we have an outgoing edge
-            while x < child.range_end and x < len(n) and self.seq[self.root.range_start + x] == n[x]:  # self.root.range_start has to be the beginning of the match. In other words: We have to begin at each node instead of the root
+            while x < child.range_end and x < len(n) and self.seq[child.range_start + x] == n[x]:  # self.root.range_start has to be the beginning of the match. In other words: We have to begin at each node instead of the root
                 x += 1
-            if x == child.range_end and x < len(n):  # if we reach the end of the edge, and we have not found a match, we have to search down a new node
-                return self.search_rec(child,x,n)
-            elif x == len(n):  # if we reach the end of an edge and we find a match (also works on edges
+            if x == len(n):  # if we reach the end of an edge and we find a match (also works on edges
                 res = return_labels(child)
                 return res  # Be carefull with this recursion
+            elif x + child.range_start == child.range_end and x < len(n):  # if we reach the end of the edge, and we have not found a match, we have to search down a new node
+                return self.search_rec(child,x = 0, n = n[x:])
             else:
                 return "Match not found in branch"
         else:
@@ -132,6 +132,5 @@ res = SuffixTree()
 res.insert(x)
 # print(res.n)
 n = res.search("GTA")
-print(n)
-# for i in n:
-#     print(i)
+for i in n:
+    print(i)
