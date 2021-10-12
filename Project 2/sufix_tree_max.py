@@ -1,17 +1,18 @@
 def remap(x): # Converts the alphabet to numbers, so for instance ACGT would be [1234]
-    m = {a:i+1 for i,a in enumerate(sorted(set(x)))}
+    m = {a:i for i,a in enumerate(sorted(set(x)))}
     n = [m[a] for a in x]
     return n
 
 
 class Node():
 
-    def __init__(self, range_start = None, range_end = None, string_label = None, children = [None]*5, parent = None):
+    def __init__(self, range_start = None, range_end = None, string_label = None, parent = None, children = [None, None, None, None, None]):
         self.range_start = range_start
         self.range_end = range_end
         self.string_label = string_label
-        self.children = children # Is defined later
         self.parent = parent
+        self.children = children # Is defined later
+
 
     def __repr__(self):
         rep = f"Node({self.range_start},{self.range_end})"
@@ -23,20 +24,23 @@ class SuffixTree():
     def __init__(self, seq = None):
         self.seq = seq
         self.root = Node()
-        self.root.parent = self.root
+        # self.root.parent = self.root
 
-    def insert_suffix(self, seq):
-        self.seq = remap(seq) += "$" #add sentinel
+
+    def insert_suffix(self, string):
+        self.seq = remap(string) + "0" #add sentinel
 
         start = 0
-        end = len(seq)
+        end = len(self.seq)
+        i = 0
 
         #First suffix
-        first = Node(range_start = start, range_end = end, string_label = 0, parent = self.root)
+        first = Node(range_start = start, range_end = end, string_label = i, parent = self.root, children = [None, None, None, None, None])
+        self.root.children = first
 
         #Insert the rest
         for i in range(1, end):
-            self.insert_naive()
+            self.naive_insert()
 
 
     def naive_insert(self, st, v, start, end): #suffix tree, node to search from (root), start, end
