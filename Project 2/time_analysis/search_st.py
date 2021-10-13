@@ -1,4 +1,9 @@
 import sys
+
+"""
+Version of Stine's pattern matching using suffix trees modified to easily be used in the timing notebook
+"""
+
 def remap(x):
     m = {a:i for i,a in enumerate(sorted(set(x)))}
     n = [m[a] for a in x]
@@ -126,38 +131,31 @@ class SuffixTree():
 
 
 # Wrapper function
-def search_suffix(fasta,fastq):
+def search_suffix(x,p):
 
-    if len(fasta) < 0 or len(fastq) < 0:
+    if len(x) < 0 or len(p) < 0:
         return "Problems with either fasta or fastq file"
 
     flag, mapq, pnext, tlen = 0,0,0,0
     rnext = "*"
 
-    for x in fasta.items():
-        rname = x[0]
-        tree = None
-        tree = SuffixTree()
-        tree.root.children = [None, None, None, None, None]
-        tree.insert(x[1])
+    rname = x[0]
+    tree = None
+    tree = SuffixTree()
+    tree.root.children = [None, None, None, None, None]
+    tree.insert(x[1])
 
+    qname = p[0]
+    substring = p[1][0]
+    cigar = str(len(substring)) + "M"
+    qual = p[1][1]
 
-        for p in fastq.items():
-            qname = p[0]
-            substring = p[1][0]
-            cigar = str(len(substring)) + "M"
-            qual = p[1][1]
+    seq = [tree.alpha[a] for a in substring]
 
-            seq = [tree.alpha[a] for a in substring]
+    matches = tree.search_rec(tree.root, 0, 0, seq)
 
-            matches = tree.search_rec(tree.root, 0, 0, seq)
-
-
-
-
-
-            if matches is not None:
-                for match in matches:
-                    pos = int(match) + 1
-                    print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
+    if matches is not None:
+        for match in matches:
+            pos = int(match) + 1
+            print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
 
