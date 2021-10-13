@@ -1,25 +1,4 @@
-from parsers.read_fasta import read_fasta_file
-from parsers.read_fastq import read_fastq_file
-import argparse, sys
-
-# # Definitions for argparse
-parser = argparse.ArgumentParser(description='Pattern matching using suffix tree construction')
-
-parser.add_argument(
-    'fastafile',
-    help="Input fasta file"
-)
-parser.add_argument(
-    'fastqfile',
-    help="Input fastq file"
-)
-
-args = parser.parse_args()
-
-# Read in files
-fasta = read_fasta_file(args.fastafile)
-fastq = read_fastq_file(args.fastqfile)
-
+import sys
 def remap(x):
     m = {a:i for i,a in enumerate(sorted(set(x)))}
     n = [m[a] for a in x]
@@ -182,5 +161,3 @@ def search_suffix(fasta,fastq):
                     pos = int(match) + 1
                     print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
 
-
-search_suffix(fasta,fastq)
