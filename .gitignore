@@ -9,3 +9,5 @@ Project 3/jannesnotes.py
 .gitignore
 Project 3/parsers/__pycache__/read_fastq.cpython-39.pyc
 Project 3/parsers/__pycache__/read_fasta.cpython-39.pyc
+Project 2/search-st_STINE.py
+.gitignore
