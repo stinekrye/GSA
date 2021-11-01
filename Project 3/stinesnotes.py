@@ -1,4 +1,6 @@
 # Try to build the SA and LCP array from a suffix tree
+from read_SA_LCP import read_SA_LCP
+
 def remap(x):
     m = {a:i for i,a in enumerate(sorted(set(x)))}
     n = [m[a] for a in x]
@@ -102,7 +104,7 @@ def SA_LCP(node,td = 0, ld = 0, SA = [], LCP = []):
 
     return SA, LCP
 
-def gen_lcp(seq):
+def gen_lcp(seq, name):
 
     # Generate tree, SA and LCP arrays
     seq = seq
@@ -111,7 +113,7 @@ def gen_lcp(seq):
     SA, LCP = SA_LCP(tree.root)
 
     # Write file
-    f = open("SA_LCP.txt", "w")
+    f = open(f"SA_LCP_{name}.txt", "w")
     f.write("SA \t LCP \n")
     for i in range(len(SA)):
         f.write(f"{SA[i]} \t {LCP[i]} \n")
@@ -122,8 +124,11 @@ def gen_lcp(seq):
 
 
 # Construct a tree for testing
-x = "BANANA"
-res = gen_lcp(x)
-print(res)
+# x = "BANANA"
+# res = gen_lcp(x, "fasta1")
+# print(res)
 
+SA, LCP = read_SA_LCP("fasta1")
+print(SA)
+print(LCP)
 

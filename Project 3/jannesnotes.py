@@ -1,5 +1,6 @@
 from parsers.read_fasta import read_fasta_file
 from parsers.read_fastq import read_fastq_file
+from parsers.read_SA_LCP import read_SA_LCP
 import sys, argparse
 
 def return_labels(node):
