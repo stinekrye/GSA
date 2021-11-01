@@ -53,8 +53,7 @@ class SuffixTree():
 
         return new_leaf
 
-    def split_edge(self, v, prev_sa, length_up):
-                                  
+    def split_edge(self, v, length_up):                       
         # New node
         u = Node(
             range_start = v.range_start, 
@@ -89,7 +88,7 @@ class SuffixTree():
         if length_up == 0:
             new_leaf = self.append_child(v, sa[i], lcp[i], length)
         else: 
-            u = self.split_edge(v, sa[i-1], length_up)
+            u = self.split_edge(v, length_up)
             new_leaf = self.append_child(u, sa[i], lcp[i], length)
 
         return new_leaf
@@ -113,9 +112,12 @@ class SuffixTree():
             v = self.lcp_insert(i, sa, lcp, v, seq_length)
 
     def find_edge_search(self, c, char):
-        return c.children[char]
+        for child in c.children:
+            self.seq[child.range_start] == char
+            return child
 
     def search_rec(self,c,x,k, n):
+
         child = self.find_edge_search(c, n[x])
         if child:  # If we have an outgoing edge
             k = child.range_start
@@ -174,3 +176,4 @@ sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
 lcp = [0, 0, 1, 1, 4, 0, 0, 1, 0, 2, 1, 3]
 st = SuffixTree()
 st.lcp_suffix_tree(sa, lcp)
+print(st.find_edge_search(Node(10, 11), 8))
