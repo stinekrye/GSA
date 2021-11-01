@@ -113,8 +113,8 @@ class SuffixTree():
 
     def find_edge_search(self, c, char):
         for child in c.children:
-            self.seq[child.range_start] == char
-            return child
+            if self.seq[child.range_start] == char
+                return child
 
     def search_rec(self,c,x,k, n):
 
