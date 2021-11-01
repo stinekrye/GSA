@@ -2,6 +2,10 @@ from parsers.read_fasta import read_fasta_file
 from parsers.read_fastq import read_fastq_file
 from parsers.read_SA_LCP import read_SA_LCP
 import sys, argparse
+def remap(x):
+    m = {a:i for i,a in enumerate(sorted(set(x)))}
+    n = [m[a] for a in x]
+    return n, m
 
 def return_labels(node):
     stack = [node]
@@ -114,7 +118,7 @@ class SuffixTree():
 
     def find_edge_search(self, c, char):
         for child in c.children:
-            if self.seq[child.range_start] == char
+            if self.seq[child.range_start] == char:
                 return child
 
     def search_rec(self,c,x,k, n):
@@ -146,6 +150,7 @@ def search_suffix(fasta,fastq):
     rnext = "*"
 
     for x in fasta.items():
+        # tree.seq = remap((x[1]+"0"))[0] Consider getting the sequence like this
         rname = x[0]
         tree = None
         tree = SuffixTree()
@@ -176,5 +181,27 @@ def search_suffix(fasta,fastq):
 sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
 lcp = [0, 0, 1, 1, 4, 0, 0, 1, 0, 2, 1, 3]
 st = SuffixTree()
+st.seq = remap("MISSISSIPPI0")[0]  ### I HAVE ADDED THIS. See my suggestion on how to do it in the wrapper function /STINE
 st.lcp_suffix_tree(sa, lcp)
 print(st.find_edge_search(Node(10, 11), 8))
+
+###### NOTES ON HOW TO READ THE SA AND LCP ARRAY ######
+# When generating the SA/LCP arrays, the gen_lcp function needs a sequence and its name as input.
+# The sequence is one sequence from a fasta file and the name is its name (NOT FILE NAME, BUT SEQUENCE NAME)
+# def :
+
+# The output file is named SA_LCP_{name}.txt, so the read_SA_LCP needs the <name> to read the correct file
+# Example:
+#       fasta file:
+#       >fasta1
+#       GCGTGCTGC
+#
+# Output:
+#       gen_lcp(seq, name) creates output file name: SA_LCP_fasta1.txt.
+#
+# Reading in the file:
+#       Running read_SA_LCP("fasta1") gives the following output:
+
+SA, LCP = read_SA_LCP("fasta1")
+print(SA)
+print(LCP)

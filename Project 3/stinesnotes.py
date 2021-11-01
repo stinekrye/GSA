@@ -1,5 +1,5 @@
 # Try to build the SA and LCP array from a suffix tree
-from read_SA_LCP import read_SA_LCP
+from parsers.read_SA_LCP import read_SA_LCP
 
 def remap(x):
     m = {a:i for i,a in enumerate(sorted(set(x)))}
@@ -17,6 +17,7 @@ class Node():
         rep = f"Node({self.range_start},{self.range_end})"
         return rep
 class SuffixTree():
+
     def __init__(self, seq = None):
         self.seq = seq
         self.root = Node(range_start = 0, range_end = 0)
@@ -83,6 +84,29 @@ class SuffixTree():
             self.naive_insert(self.root,x,k,i)                                                  # input = suffix tree, root to search from, x (incrementor), i = string label. n+1 = length of sequence
             i += 1
 
+
+    def find_edge_search(self, c, char):
+        for child in c.children:
+            if self.seq[child.range_start] == char:
+                return child
+
+    def search_rec(self,c,x,k, n):
+        child = self.find_edge_search(c, n[x])
+        if child:  # If we have an outgoing edge
+            k = child.range_start
+            while k < child.range_end and x < len(n) and self.seq[k] == n[x]:  # self.root.range_start has to be the beginning of the match. In other words: We have to begin at each node instead of the root
+                x += 1
+                k += 1
+            if k >= child.range_end and x < len(n):  # if we reach the end of the edge, and we have not found a match, we have to search down a new node
+                return self.search_rec(child, x, k, n)
+            elif x == len(n):  # if we reach the end of an edge and we find a match (also works on edges
+                res = return_labels(child)
+                return res  # Be carefull with this recursion
+            else:
+                return None
+        else:
+            return None
+
 def SA_LCP(node,td = 0, ld = 0, SA = [], LCP = []):
 
     if node.string_label != None:
@@ -124,8 +148,8 @@ def gen_lcp(seq, name):
 
 
 # Construct a tree for testing
-# x = "BANANA"
-# res = gen_lcp(x, "fasta1")
+x = "MISSISSIPPI"
+res = gen_lcp(x, "fasta1")
 # print(res)
 
 SA, LCP = read_SA_LCP("fasta1")
