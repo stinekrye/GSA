@@ -3,24 +3,6 @@ def remap(x):
     m = {a:i for i,a in enumerate(sorted(set(x)))}
     n = [m[a] for a in x]
     return n, m
-def return_labels(node):
-    stack = [node]
-    # stack.append(node)
-
-    while len(stack) > 0:
-        if stack[-1].string_label != None:
-            yield stack[-1].string_label
-            stack.pop(-1)
-            # p.parent = None
-            # p.children = None
-
-        else:
-            parent = stack.pop(-1)
-            for child in parent.children:
-                if child != None:
-                    stack.append(child)
-            # parent.parent = None
-            # parent.children = None
 class Node():
     def __init__(self, range_start = None, range_end = None, string_label = None, children = [None,None,None,None,None], parent = None):
         self.range_start = range_start
@@ -99,27 +81,48 @@ class SuffixTree():
             self.naive_insert(self.root,x,k,i)                                                  # input = suffix tree, root to search from, x (incrementor), i = string label. n+1 = length of sequence
             i += 1
 
+def SA_LCP(node,td = 0, ld = 0, SA = [], LCP = []):
 
-def SA(node): #Rename/build to deal with LCP also
-    for child in node.children:
-        if child != None:
-            if child.string_label != None:
-                print(child.string_label)
-            else:
-                SA(child)
+    if node.string_label != None:
+        SA.append(node.string_label)
+        LCP.append(ld)
 
+    else:
 
+        # Do something for first child here
+        first = next(child for child in node.children if child is not None)
+        td += (node.range_end - node.range_start)
+        SA_LCP(first, td, ld, SA, LCP)
+
+        # Do something for the rest of the children here
+        ld = td
+        for child in node.children:
+            if child != None and child != first:
+                SA_LCP(child, td, ld, SA, LCP)
+
+    return SA, LCP
+
+def gen_lcp(seq):
+
+    # Generate tree, SA and LCP arrays
+    tree = SuffixTree()
+    tree.insert(x)
+    SA, LCP = SA_LCP(tree.root)
+
+    # Write file
+    f = open("test.txt", "w")
+    f.write("SA \t LCP \n")
+    for i in range(len(SA)):
+        f.write(f"{SA[i]} \t {LCP[i]} \n")
+    f.close()
+
+    return "Done"
 
 
 
 # Construct a tree for testing
+x = "BANANA"
+res = gen_lcp(x)
+print(res)
 
-x = "GTGTC"
-tree = SuffixTree()
-tree.insert(x)
-nodes = SA(tree.root)
-print(nodes)
 
-test = [5,4,2,0,3,1]
-for i in test:
-    print(x[i:])
