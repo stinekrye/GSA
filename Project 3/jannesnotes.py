@@ -60,7 +60,8 @@ class SuffixTree():
             range_start = v.range_start, 
             range_end = v.range_end - length_up, 
             parent = v.parent, 
-            children=[]
+            children=[],
+            string_label=None
             )
 
         # Adding u to the children list of v's parent and removing v from it
@@ -87,7 +88,7 @@ class SuffixTree():
             v_edge_length = v.range_end - v.range_start
         
         if length_up == 0:
-            new_leaf = self.append_child(v, sa[i], sa[i], length)
+            new_leaf = self.append_child(v, sa[i] + lcp[i], sa[i], length)
         else: 
             u = self.split_edge(v, lcp[i], sa[i-1], length_up)
             new_leaf = self.append_child(u, sa[i] + lcp[i], sa[i], length)
