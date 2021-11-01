@@ -1,6 +1,6 @@
 from parsers.read_fasta import read_fasta_file
 from parsers.read_fastq import read_fastq_file
-import sys
+import sys, argparse
 
 def return_labels(node):
     stack = [node]
