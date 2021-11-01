@@ -53,12 +53,12 @@ class SuffixTree():
 
         return new_leaf
 
-    def split_edge(self, v, lcp, prev_sa, tracker):
+    def split_edge(self, v, lcp, prev_sa):
                                   
         # New node
         u = Node(
             range_start = v.range_start, 
-            range_end = v.range_start + lcp - tracker, 
+            range_end = v.range_start + lcp, 
             parent = v.parent, 
             children=[]
             )
@@ -77,29 +77,11 @@ class SuffixTree():
 
         return u
     
-    def lcp_insert(self, i, sa, lcp, v, tracker):
+    def lcp_insert(self, i, sa, lcp, v):
         length = len(sa)
-        
-        # # If lcp = 0, add leaf at root
-        # if lcp[i] == 0:
-        #     new_leaf = self.append_child(self.root, sa[i], lcp[i], length)
-        #     edge_length = 0
-        
-        # # Else split edge and add new leaf
-        # else:
-        #     new_lcp = lcp[i] - edge_length
-            
-        #     if new_lcp == 0:
-        #         new_leaf = self.append_child(v.parent, sa[i], lcp[i], length)
-        #     else:       
-        #         u = self.split_edge(v, new_lcp, sa[i], sa[i - 1], edge_length)
-        #         new_leaf = self.append_child(u, sa[i], lcp[i], length)
-
-        #         edge_length += lcp[i]
 
         length_up = length - sa[i-1] - lcp[i]
         v_edge_length = v.range_end - v.range_start
-
 
         while length_up >= v_edge_length and length_up != 0:
             length_up -= v_edge_length
@@ -109,15 +91,10 @@ class SuffixTree():
         if length_up == 0:
             new_leaf = self.append_child(v, sa[i], length)
         else: 
-            u = self.split_edge(v, lcp[i], sa[i-1], tracker)
+            u = self.split_edge(v, lcp[i], sa[i-1])
             new_leaf = self.append_child(u, sa[i] + lcp[i], length)
 
-        if lcp[i] == lcp[i-1]:
-            tracker += lcp[i]
-        else:
-            tracker = 0
-
-        return new_leaf, tracker
+        return new_leaf
 
     def lcp_suffix_tree(self, sa, lcp):
         seq_length = len(sa)
@@ -134,9 +111,8 @@ class SuffixTree():
         self.root.children.append(v)
 
         # Insert the rest
-        tracker = 0
         for i in range(1, seq_length):
-            v, tracker = self.lcp_insert(i, sa, lcp, v, tracker)
+            v = self.lcp_insert(i, sa, lcp, v)
 
 
     def find_edge_search(self, c, char):
