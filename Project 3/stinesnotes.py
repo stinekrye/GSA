@@ -105,12 +105,13 @@ def SA_LCP(node,td = 0, ld = 0, SA = [], LCP = []):
 def gen_lcp(seq):
 
     # Generate tree, SA and LCP arrays
+    seq = seq
     tree = SuffixTree()
-    tree.insert(x)
+    tree.insert(seq)
     SA, LCP = SA_LCP(tree.root)
 
     # Write file
-    f = open("test.txt", "w")
+    f = open("SA_LCP.txt", "w")
     f.write("SA \t LCP \n")
     for i in range(len(SA)):
         f.write(f"{SA[i]} \t {LCP[i]} \n")
