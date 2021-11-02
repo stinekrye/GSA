@@ -41,13 +41,13 @@ def read_fastq_file(file):
 
     return seqs
 
-def read_SA_LCP(fasta):
-    data = np.loadtxt(f"SA_LCP_{fasta}.txt", dtype = int, skiprows = 1)
-    SA = data[:,0]
-    LCP = data[:,1]
-    return SA,LCP
+# def read_SA_LCP(fasta):
+#     data = np.loadtxt(f"SA_LCP_{fasta}.txt", dtype = int, skiprows = 1)
+#     SA = data[:,0]
+#     LCP = data[:,1]
+#     return SA,LCP
 
-def new_read_SA_LCP(file):
+def read_SA_LCP(file):
     seq = {}
     sequence, current_sa, current_lcp = None, None, None
     with open(file) as fp:

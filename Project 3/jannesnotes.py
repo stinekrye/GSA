@@ -200,6 +200,6 @@ else:
     parser2.add_argument('fastqfile', help="Input fastq file")
     args2 = parser2.parse_args()
 
-    sa_lcp = parsers.new_read_SA_LCP(args2.sa_lcp_file)
+    sa_lcp = parsers.read_SA_LCP(args2.sa_lcp_file)
     fastq = parsers.read_fastq_file(args2.fastqfile)
     search_suffix(sa_lcp, fastq)
