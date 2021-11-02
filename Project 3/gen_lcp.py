@@ -110,6 +110,7 @@ def gen_lcp(fastadict):
     # Generate tree, SA and LCP arrays
     for key, value in fastadict.items():
         seq = value 
+        tree = None
         tree = SuffixTree()
         tree.insert(seq)
         SA, LCP = SA_LCP(tree.root)
