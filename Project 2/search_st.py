@@ -1,5 +1,5 @@
-from read_fasta import read_fasta_file
-from read_fastq import read_fastq_file
+from parsers.read_fasta import read_fasta_file
+from parsers.read_fastq import read_fastq_file
 import argparse, sys
 
 # # Definitions for argparse

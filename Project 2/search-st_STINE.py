@@ -168,16 +168,16 @@ def search_suffix(fasta,fastq):
 
 
 
-fasta = read_fasta_file("fasta_test.fasta")
-fastq = read_fastq_file("fastq_test.fastq")
+# fasta = read_fasta_file("fasta_test.fasta")
+# fastq = read_fastq_file("fastq_test.fastq")
 
-search_suffix(fasta,fastq)
+# search_suffix(fasta,fastq)
 
 
 
 # #
-# res = SuffixTree()
-# # res.insert("MISSISSIPPI")
+res = SuffixTree()
+res.insert("MISSISSIPPI")
 # res.insert("GTAGTA")
 # print(res)
 # n = res.search("GTA")
