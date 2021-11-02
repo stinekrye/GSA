@@ -19,3 +19,5 @@ Project 3/jannesnotes.py
 .gitignore
 Project 3/__pycache__/parsers.cpython-38.pyc
 Project 2/search-st_STINE.py
+Project 3/__pycache__/parsers.cpython-39.pyc
+Project 3/__pycache__/gen_lcp.cpython-39.pyc

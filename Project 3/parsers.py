@@ -1,4 +1,3 @@
-import numpy as np
 
 def read_fasta_file(filename):
     sequences_lines = {}

@@ -185,21 +185,38 @@ def search_suffix(sa_lcp, fastq):
 # for the pattern found in the fastq file.
 
 # Creating first parser
-parser1 = argparse.ArgumentParser(description='SA and LCP computation from suffix tree')
-parser1.add_argument('-p', help='Create SA and LCP from fastafile')
-args1 = parser1.parse_known_args()
+# parser1 = argparse.ArgumentParser(description='SA and LCP computation from suffix tree')
+# parser1.add_argument('-p', help='Create SA and LCP from fastafile')
+# args1 = parser1.parse_known_args()
 
-if args1[0].p:
-    fastafile = parsers.read_fasta_file(args1[0].p)
-    gen_lcp.gen_lcp(fastafile)
+# if args1[0].p:
+#     fastafile = parsers.read_fasta_file(args1[0].p)
+#     gen_lcp.gen_lcp(fastafile)
 
-else:
-    # Creating second parser if -p is not given
-    parser2 = argparse.ArgumentParser(description='Pattern matching using suffix tree')
-    parser2.add_argument('sa_lcp_file', help="Input file of SA and LCP")
-    parser2.add_argument('fastqfile', help="Input fastq file")
-    args2 = parser2.parse_args()
+# else:
+#     # Creating second parser if -p is not given
+#     parser2 = argparse.ArgumentParser(description='Pattern matching using suffix tree')
+#     parser2.add_argument('sa_lcp_file', help="Input file of SA and LCP")
+#     parser2.add_argument('fastqfile', help="Input fastq file")
+#     args2 = parser2.parse_args()
 
-    sa_lcp = parsers.read_SA_LCP(args2.sa_lcp_file)
-    fastq = parsers.read_fastq_file(args2.fastqfile)
-    search_suffix(sa_lcp, fastq)
+#     sa_lcp = parsers.read_SA_LCP(args2.sa_lcp_file)
+#     fastq = parsers.read_fastq_file(args2.fastqfile)
+#     search_suffix(sa_lcp, fastq)
+
+fastq = {
+    'iss': ['iss', '~~~'], 
+    'mis': ['mis', '~~~'], 
+    'ssi': ['ssi', '~~~'], 
+    'ssippi': ['ssippi', '~~~~~~']}
+sa_lcp = {
+    'one': 
+        ('mississippi', 
+        [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2], 
+        [0, 0, 1, 1, 4, 0, 0, 1, 0, 2, 1, 3]), 
+    'two': 
+        ('mississippimississippi', 
+        [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2, 11, 10, 21, 10, 18, 7, 15, 4, 12, 1, 22, 11, 20, 9, 19, 8, 17, 6, 14, 3, 16, 5, 13, 2], 
+        [0, 0, 1, 1, 4, 0, 0, 1, 0, 2, 1, 3, 0, 0, 1, 1, 1, 4, 1, 7, 4, 10, 0, 0, 0, 2, 1, 3, 0, 5, 2, 8, 1, 6, 3, 9])}
+
+search_suffix(sa_lcp, fastq)
