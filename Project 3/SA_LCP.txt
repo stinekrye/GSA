@@ -1,3 +1,17 @@
+>one	mississippi
+SA 	 LCP 
+11 	 0 
+10 	 0 
+7 	 1 
+4 	 1 
+1 	 4 
+0 	 0 
+9 	 0 
+8 	 1 
+6 	 0 
+3 	 2 
+5 	 1 
+2 	 3 
 >two	mississippimississippi
 SA 	 LCP 
 22 	 0 

@@ -84,7 +84,6 @@ class SuffixTree():
             i += 1
 
 def SA_LCP(node,td = 0, ld = 0, SA = [], LCP = []):
-
     if node.string_label != None:
         SA.append(node.string_label)
         LCP.append(ld)
@@ -107,20 +106,20 @@ def SA_LCP(node,td = 0, ld = 0, SA = [], LCP = []):
 def gen_lcp(fastadict):
     f = open(f"SA_LCP.txt", "w")
 
-    # Generate tree, SA and LCP arrays
+    # # Generate tree, SA and LCP arrays
     for key, value in fastadict.items():
         seq = value 
         tree = None
         tree = SuffixTree()
+        tree.root.children = [None, None, None, None, None]
         tree.insert(seq)
-        SA, LCP = SA_LCP(tree.root)
+        SA, LCP = SA_LCP(tree.root, SA=[], LCP=[])
 
     # Write file
         f.write(">" + str(key) + "\t" + str(seq) + "\n")
         f.write("SA \t LCP \n")
         for i in range(len(SA)):
             f.write(f"{SA[i]} \t {LCP[i]} \n")
-    
-    f.close()
+
 
     return "Done"
