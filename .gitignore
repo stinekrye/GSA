@@ -21,3 +21,19 @@ Project 3/__pycache__/parsers.cpython-38.pyc
 Project 2/search-st_STINE.py
 Project 3/__pycache__/parsers.cpython-39.pyc
 Project 3/__pycache__/gen_lcp.cpython-39.pyc
+Project 3/time_analysis/__pycache__/search_st.cpython-39.pyc
+.gitignore
+Project 3/time_analysis/__pycache__/time_search.cpython-39.pyc
+Project 3/time_analysis/__pycache__/parsers.cpython-39.pyc
+Project 3/time_analysis/__pycache__/gen_lcp.cpython-39.pyc
+.gitignore
+.gitignore
+Project 3/time_analysis/test_files/n_10000000.fasta
+Project 3/time_analysis/test_files/n_1000000.fasta
+Project 3/time_analysis/test_files/n_100000.fasta
+Project 3/time_analysis/test_files/n_10000.fasta
+Project 3/time_analysis/test_files/m_100000.fastq
+Project 3/time_analysis/test_files/m_10000.fastq
+Project 3/time_analysis/test_files/m_1000.fastq
+Project 3/time_analysis/test_files/m_100.fastq
+.gitignore
