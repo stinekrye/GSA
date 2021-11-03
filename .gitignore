@@ -37,3 +37,4 @@ Project 3/time_analysis/test_files/m_10000.fastq
 Project 3/time_analysis/test_files/m_1000.fastq
 Project 3/time_analysis/test_files/m_100.fastq
 .gitignore
+Project 3/time_analysis/__pycache__/timing_search.cpython-39.pyc
