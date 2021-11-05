@@ -103,8 +103,8 @@ def SA_LCP(node,td = 0, ld = 0, SA = [], LCP = []):
 
     return SA, LCP
 
-def gen_lcp(fastadict):
-    f = open(f"SA_LCP.txt", "w")
+def gen_lcp(fastadict, fastaname):
+    f = open(f"{fastaname}.sa-lcp", "w")
 
     # # Generate tree, SA and LCP arrays
     for key, value in fastadict.items():

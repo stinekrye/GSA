@@ -191,15 +191,15 @@ args1 = parser1.parse_known_args()
 
 if args1[0].p:
     fastafile = parsers.read_fasta_file(args1[0].p)
-    gen_lcp.gen_lcp(fastafile)
+    fastaname = f"{args1[0].p}"
+    gen_lcp.gen_lcp(fastafile, fastaname)
 
 else:
     # Creating second parser if -p is not given
     parser2 = argparse.ArgumentParser(description='Pattern matching using suffix tree')
-    parser2.add_argument('sa_lcp_file', help="Input file of SA and LCP")
+    parser2.add_argument('fastafile', help="Input fasta file")
     parser2.add_argument('fastqfile', help="Input fastq file")
     args2 = parser2.parse_args()
-
-    sa_lcp = parsers.read_SA_LCP(args2.sa_lcp_file)
+    sa_lcp = parsers.read_SA_LCP(f"{args2.fastafile}.sa-lcp")
     fastq = parsers.read_fastq_file(args2.fastqfile)
     search_suffix(sa_lcp, fastq)
