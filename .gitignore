@@ -38,3 +38,6 @@ Project 3/time_analysis/test_files/m_1000.fastq
 Project 3/time_analysis/test_files/m_100.fastq
 .gitignore
 Project 3/time_analysis/__pycache__/timing_search.cpython-39.pyc
+Project 4/jannesnotes.py
+Project 4/__pycache__/parsers.cpython-39.pyc
+Project 4/__pycache__/gen_lcp.cpython-39.pyc
