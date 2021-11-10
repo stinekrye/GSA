@@ -74,12 +74,31 @@ def search_fm(sa, fastq):
                     pos = int(match) + 1
                     print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
 
-sa = {
-    "one":["mississippi", [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]], 
-    "two":["mississippimississippi", [22, 21, 10, 18, 7, 15, 4, 12, 1, 11, 0, 20, 9, 19, 8, 17, 6, 14, 3, 16, 5, 13, 2]]}
-fastq_dict = {
-    "iss":["iss", "~~~"], 
-    "mis":["mis", "~~~"], 
-    "ssi":["ssi", "~~~"], 
-    "ssippi":["ssippi", "~~~~~~"]}
-search_fm(sa, fastq_dict)
+#### RUNNING THE SCRIPT
+# If the -p option is given with a fastafile (e.g. "python search_st2.py -p test.fasta"), 
+# the script will construct a suffix tree, create the SA and LCP from it, and output the 
+# two arrays to a textfile named "SA_LCP_name". Where the name is the sequence name from 
+# the fastafile.
+# If the script is not given the -p option, it takes two input files: a fastq file and a 
+# text file containing the SA and LCP. From this it constructs a suffix tree and searches
+# for the pattern found in the fastq file.
+
+# Creating first parser
+parser1 = argparse.ArgumentParser(description='SA computation from suffix tree')
+parser1.add_argument('-p', help='Create SA from fastafile')
+args1 = parser1.parse_known_args()
+
+if args1[0].p:
+    fastafile = parsers.read_fasta_file(args1[0].p)
+    fastaname = f"{args1[0].p}"
+    gen_lcp.gen_lcp(fastafile, fastaname)
+
+else:
+    # Creating second parser if -p is not given
+    parser2 = argparse.ArgumentParser(description='Pattern matching using suffix tree')
+    parser2.add_argument('fastafile', help="Input fasta file")
+    parser2.add_argument('fastqfile', help="Input fastq file")
+    args2 = parser2.parse_args()
+    sa = parsers.read_SA_LCP(f"{args2.fastafile}.sa-lcp")
+    fastq = parsers.read_fastq_file(args2.fastqfile)
+    search_fm(sa, fastq)
