@@ -75,13 +75,13 @@ def search_fm(sa, fastq):
                     print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
 
 #### RUNNING THE SCRIPT
-# If the -p option is given with a fastafile (e.g. "python search_st2.py -p test.fasta"), 
+# If the -p option is given with a fastafile (e.g. "python search_st2.py -p test.fa"), 
 # the script will construct a suffix tree, create the SA and LCP from it, and output the 
-# two arrays to a textfile named "SA_LCP_name". Where the name is the sequence name from 
-# the fastafile.
+# two arrays to a textfile named "test.fa.sa-lcp".
 # If the script is not given the -p option, it takes two input files: a fastq file and a 
-# text file containing the SA and LCP. From this it constructs a suffix tree and searches
-# for the pattern found in the fastq file.
+# fasta file name. From the fasta file name it finds a file that has the fasta name as 
+# prefix and a suffix of .sa-lcp. From this it searches for the pattern found in the fastq 
+# file.
 
 # Creating first parser
 parser1 = argparse.ArgumentParser(description='SA computation from suffix tree')
