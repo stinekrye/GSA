@@ -7,7 +7,7 @@ def binary1(p,x,sa,k, l, u): # returns a match in the SA
 
     while high-low != 1:
         if p[k] == x[sa[mid]+k:sa[mid]+k+1]:
-            return mid
+            return mid, high, low
 
         elif p[k] > x[sa[mid]+k:sa[mid]+k+1]:
             low = mid
@@ -56,10 +56,10 @@ def binary3(p,x,sa):
     u = len(sa)
     k = 0
     while k < len(p):
-        first_match = binary1(p,x,sa,k, l, u)
+        first_match, high, low = binary1(p,x,sa,k, l, u)
         if first_match:
-            l = binary2(p, x, sa, k, first_match, l, u, upper=False)        # Points one past the interval
-            u = binary2(p, x, sa, k, first_match, l, u, upper=True) + 1     # Points one past the interval
+            l = binary2(p, x, sa, k, first_match, low, high, upper=False)        # Points one past the interval # put in high/low here
+            u = binary2(p, x, sa, k, first_match, low, high, upper=True) + 1     # Points one past the interval
             if k == len(p)-1:
                 return sa[l+1:u]
             else:
@@ -78,9 +78,9 @@ def binary3(p,x,sa):
 
 
 ###################################
-# p = "IPPI"
-# x = "MISSISSIPPI0"
-# sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
+p = "ISS"
+x = "MISSISSIPPI0"
+sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
 #
 # p = "AT"
 # x = "GAGAT"
@@ -88,10 +88,10 @@ def binary3(p,x,sa):
 # l = 0
 # u = len(x)
 
-
-p = "AA"
-x = "AAAAA0"
-sa = [5,4,3,2,1,0]
+#
+# p = "AA"
+# x = "AAAAA0"
+# sa = [5,4,3,2,1,0]
 
 
 # res = binary1(p,x,sa,k, l, u)
