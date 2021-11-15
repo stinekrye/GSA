@@ -71,7 +71,7 @@ def binary3(p,x,sa):
     else:
         return "No match"
 
-def search_bs(sa, fastq):
+def search_bs(sa, fastq, test = False):
 
     if len(sa) < 0 or len(fastq) < 0:
         return "Problems with either fastq file or the SA and LCP"
@@ -91,16 +91,25 @@ def search_bs(sa, fastq):
             qual = p[1][1]
 
             matches = binary3(substring, y, sa)
+            # matches = sorted(matches)
+            if test == False:
+                if matches is not None:
+                    for match in matches:
+                        pos = int(match) + 1
+                        print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
+            if test == True:
+                if matches is not None:
+                    for match in matches:
+                        pos = int(match) + 1
+                        yield f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}"
 
-            if matches is not None:
-                for match in matches:
-                    pos = int(match) + 1
-                    print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
-
-
+def print_test(iter):
+    iter = sorted(iter)
+    for i in iter:
+        print(i, file = sys.stdout)
 
 ###################################
-fastq = parsers.read_fastq_file("fastq_test.fq")
-sa = parsers.read_SA_LCP("fasta_test.fa.sa-lcp")
-res3 = search_bs(sa, fastq)
-print(res3)
+# fastq = parsers.read_fastq_file("fastq_test.fq")
+# sa = parsers.read_SA_LCP("fasta_test.fa.sa-lcp")
+# res3 = search_bs(sa, fastq, test = True)
+# print_test(res3)

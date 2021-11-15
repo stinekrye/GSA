@@ -2,7 +2,7 @@ from unittest import TestCase
 from search_ba import search_ba_wrapper
 from read_fasta import read_fasta_file
 from read_fastq import read_fastq_file
-from NEW_search_naive_stine import naive_matching
+from NEW_search_naive_stine import search_naive
 import random, sys
 random.seed(367)
 
