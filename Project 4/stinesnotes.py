@@ -67,6 +67,7 @@ def binary3(p,x,sa):
 
     else:
         return "No match"
+
 def search_bs(sa, fastq, test = False):
 
     if len(sa) < 0 or len(fastq) < 0:
@@ -104,3 +105,11 @@ def print_test(iter):
     for i in iter:
         print(i, file = sys.stdout)
 
+
+
+# Make test on large files
+fasta = parsers.read_fasta_file(f"fasta_test.fa")
+fastq = parsers.read_fastq_file(f"fastq_test.fq")
+sa = parsers.read_SA_LCP(f"fasta_test.fa.sa-lcp")
+
+res = search_bs(sa, fastq)
