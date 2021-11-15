@@ -18,6 +18,7 @@ def binary1(p,x,sa,k, l, u): # returns a match in the SA
         else:
             high = mid
             mid = low + ((high-low)//2)
+    return None, None, None
 
 def binary2(p,x,sa,k, mid, l, u, upper):
     if upper == False: # If we are searching for lower bound
@@ -65,10 +66,10 @@ def binary3(p,x,sa):  # I have problems with this function.
             else:
                 k += 1
         else:
-            return "No match"
+            return None
 
     else:
-        return "No match"
+        return None
 
 def search_bs(sa, fastq, test = False):
 
@@ -91,11 +92,10 @@ def search_bs(sa, fastq, test = False):
 
             matches = binary3(substring, y, sa)
             # matches = sorted(matches)
-            if test == False:
-                if matches is not None:
-                    for match in matches:
-                        pos = int(match) + 1
-                        print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
+            if matches is not None:
+                for match in matches:
+                    pos = int(match) + 1
+                    print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
 
 
 
@@ -103,15 +103,15 @@ def search_bs(sa, fastq, test = False):
 
 
 # # Make test on large files
-fasta = parsers.read_fasta_file(f"fasta_test.fa")
-fastq = parsers.read_fastq_file(f"fastq_test.fq")
-sa = parsers.read_SA_LCP(f"fasta_test.fa.sa-lcp")
+# fasta = parsers.read_fasta_file(f"fasta_test.fa")
+# fastq = parsers.read_fastq_file(f"fastq_test.fq")
+# sa = parsers.read_SA_LCP(f"fasta_test.fa.sa-lcp")
+# #
+# # p = "ISGS"
+# # x = "MISSISSIPPI"
+# # sa = [11,10,7,4,1,0,9,8,6,3,5,2]
 #
-# p = "ISS"
-# x = "MISSISSIPPI"
-# sa = [11,10,7,4,1,0,9,8,6,3,5,2]
-#
-# res = binary3(p,x,sa)
-# print(res)
-#
-search_bs(sa, fastq, test = False)
+# # res = binary3(p,x,sa)
+# # print(res)
+# #
+# search_bs(sa, fastq, test = False)

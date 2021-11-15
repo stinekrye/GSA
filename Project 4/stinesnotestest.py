@@ -1,8 +1,5 @@
-# This script is used for the test
-
 import parsers
 import sys
-
 def binary1(p,x,sa,k, l, u): # returns a match in the SA
     low = l
     high = u
@@ -19,6 +16,7 @@ def binary1(p,x,sa,k, l, u): # returns a match in the SA
         else:
             high = mid
             mid = low + ((high-low)//2)
+    return None, None, None
 
 def binary2(p,x,sa,k, mid, l, u, upper):
     if upper == False: # If we are searching for lower bound
@@ -52,7 +50,7 @@ def binary2(p,x,sa,k, mid, l, u, upper):
                 high = mid
                 mid = low + ((high-low)//2)
     return mid
-def binary3(p,x,sa):
+def binary3(p,x,sa):  # I have problems with this function.
     l = 0
     u = len(sa)
     k = 0
@@ -66,10 +64,10 @@ def binary3(p,x,sa):
             else:
                 k += 1
         else:
-            return "No match"
+            return None
 
     else:
-        return "No match"
+        return None
 
 def search_bs(sa, fastq, test = False):
 
@@ -92,11 +90,10 @@ def search_bs(sa, fastq, test = False):
 
             matches = binary3(substring, y, sa)
             # matches = sorted(matches)
-            if test == False:
-                if matches is not None:
-                    for match in matches:
-                        pos = int(match) + 1
-                        print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
+            if matches is not None:
+                for match in matches:
+                    pos = int(match) + 1
+                    print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
             if test == True:
                 if matches is not None:
                     for match in matches:
