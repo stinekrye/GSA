@@ -1,7 +1,7 @@
 from unittest import TestCase
 from search_naive import search_naive
-from search_bs import search_bs
-from search_bs import print_test
+from stinesnotes import search_bs
+from stinesnotes import print_test
 import parsers, random, sys
 
 random.seed(367)
