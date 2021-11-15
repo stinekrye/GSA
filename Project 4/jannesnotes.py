@@ -1,18 +1,16 @@
 import numpy as np
-import gen_lcp, parsers
+import gen_sa, parsers
 import sys, argparse
 
 def c_table(x, sa):
-    counts, buckets = {}, {}
+    buckets = {}
 
     for i in range(0, len(sa)):
         char = x[sa[i]]
-        if char not in counts:
+        if char not in buckets:
             buckets[char] = i
-            counts[char] = 0
-        counts[char] += 1
 
-    return counts, buckets
+    return buckets
 
 def o_table(x, sa):
     alphabet = sorted(set(x))
@@ -30,17 +28,14 @@ def o_table(x, sa):
 
     return O
 
-def fm_search(x, p, sa):
-    alphabet = {a:i for i, a in enumerate(sorted(set(x)))} # To find the correct column in the O table
-    O = o_table(x, sa)
-    _, c_buckets = c_table(x, sa)
+def fm_search(O, C, p, sa, alpha):
     matches = None
     L, R = 0, len(sa)
     
     for a in reversed(p):
         if L == R: break
-        L = c_buckets[a] + O[int(L)][alphabet[a]]
-        R = c_buckets[a] + O[int(R)][alphabet[a]]
+        L = C[a] + O[int(L)][alpha[a]]
+        R = C[a] + O[int(R)][alpha[a]]
     
     if L != R:
         matches = sa[int(L):int(R)]
@@ -67,19 +62,33 @@ def search_fm(sa, fastq):
             cigar = str(len(substring)) + "M"
             qual = p[1][1]
 
-            matches = fm_search(y, substring, sa)
+            alpha = {a:i for i, a in enumerate(sorted(set(y)))}
+            O = o_table(y, sa)
+            C = c_table(y, sa)
+
+            matches = fm_search(O, C, substring, sa, alpha)
 
             if matches is not None:
                 for match in matches:
                     pos = int(match) + 1
                     print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
 
+
 sa = {
     "one":["mississippi", [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]], 
     "two":["mississippimississippi", [22, 21, 10, 18, 7, 15, 4, 12, 1, 11, 0, 20, 9, 19, 8, 17, 6, 14, 3, 16, 5, 13, 2]]}
+
 fastq_dict = {
     "iss":["iss", "~~~"], 
     "mis":["mis", "~~~"], 
     "ssi":["ssi", "~~~"], 
     "ssippi":["ssippi", "~~~~~~"]}
+
+# x = "mississippi$"
+# p = "iss"
+# sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
+# alpha = {a:i for i, a in enumerate(sorted(set(x)))}
+# O = o_table(x, sa)
+# C = c_table(x, sa)
+# fm_search(O, C, p, sa, alpha)
 search_fm(sa, fastq_dict)

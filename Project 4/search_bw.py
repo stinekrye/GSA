@@ -1,54 +1,69 @@
 import numpy as np
-import gen_lcp, parsers
-import sys, argparse
+import gen_sa, parsers
+import sys, argparse, json
 
-def c_table(x, sa):
-    counts, buckets = {}, {}
+def c_table(sa_dict, fastaname):
+    f = open(f"{fastaname}.c-table", "w")
+    buckets = None
 
-    for i in range(0, len(sa)):
-        char = x[sa[i]]
-        if char not in counts:
-            buckets[char] = i
-            counts[char] = 0
-        counts[char] += 1
+    for key, value in sa_dict.items():
+        buckets = {}
+        sa = value[1]
+        seq = value[0] + "$"
+        
+        for i in range(0, len(sa)):
+            char = seq[sa[i]]
+            if char not in buckets:
+                buckets[char] = i
+        
+        f.write(">" + str(key) + "\t" + str(value[0]) + "\n")
+        f.write(str(buckets) + "\n")
+    f.close()
 
-    return counts, buckets
+    return "Done"
 
-def o_table(x, sa):
-    alphabet = sorted(set(x))
-    alphabet_size = len(alphabet)
-    n = len(sa)
+def o_table(sa_dict, fastaname):
+    f = open(f"{fastaname}.o-table", "w")
 
-    O = np.zeros((n + 1, alphabet_size))
-    
-    for i in range(1, n + 1):
-        for a in range(0, alphabet_size):
-            if x[sa[i - 1] - 1] == alphabet[a]:
-                O[i][a] = O[i - 1][a] + 1
-            else: 
-                O[i][a] = O[i - 1][a]
+    for key, value in sa_dict.items():
+        sa = value[1]
+        seq = value[0] + "$"
 
-    return O
+        alphabet = sorted(set(seq))
+        alphabet_size = len(alphabet)
+        n = len(sa)
 
-def fm_search(x, p, sa):
-    alphabet = {a:i for i, a in enumerate(sorted(set(x)))} # To find the correct column in the O table
-    O = o_table(x, sa)
-    _, c_buckets = c_table(x, sa)
+        O = np.zeros((n + 1, alphabet_size))
+        
+        for i in range(1, n + 1):
+            for a in range(0, alphabet_size):
+                if seq[sa[i - 1] - 1] == alphabet[a]:
+                    O[i][a] = O[i - 1][a] + 1
+                else: 
+                    O[i][a] = O[i - 1][a]
+        
+        f.write(">" + str(key) + "\t" + str(value[0]) + "\n")
+        f.write(str(O) + "\n")
+
+    f.close()
+
+    return "Done"
+
+def fm_search(O, C, p, sa, alpha):
     matches = None
     L, R = 0, len(sa)
     
     for a in reversed(p):
         if L == R: break
-        L = c_buckets[a] + O[int(L)][alphabet[a]]
-        R = c_buckets[a] + O[int(R)][alphabet[a]]
+        L = C[a] + O[int(L)][alpha[a]]
+        R = C[a] + O[int(R)][alpha[a]]
     
     if L != R:
         matches = sa[int(L):int(R)]
     
     return matches
 
-# Wrapper function
-def search_fm(sa, fastq):
+def search_fm(sa, fastq, o_dict, c_dict):
 
     if len(sa) < 0 or len(fastq) < 0:
         return "Problems with either fastq file or the SA and LCP"
@@ -67,12 +82,18 @@ def search_fm(sa, fastq):
             cigar = str(len(substring)) + "M"
             qual = p[1][1]
 
-            matches = fm_search(y, substring, sa)
+            alpha = {a:i for i, a in enumerate(sorted(set(y)))}
+            O = o_table(y, sa)
+            C = c_table(y, sa)
+
+            matches = fm_search(O, C, substring, sa, alpha)
 
             if matches is not None:
                 for match in matches:
                     pos = int(match) + 1
                     print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
+    
+    return 
 
 #### RUNNING THE SCRIPT
 # If the -p option is given with a fastafile (e.g. "python search_st2.py -p test.fa"), 
@@ -91,7 +112,15 @@ args1 = parser1.parse_known_args()
 if args1[0].p:
     fastafile = parsers.read_fasta_file(args1[0].p)
     fastaname = f"{args1[0].p}"
-    gen_lcp.gen_lcp(fastafile, fastaname)
+
+    # Make suffix array and read file
+    gen_sa.gen_sa(fastafile, fastaname)
+    sa = parsers.read_SA(f"{fastaname}.sa-lcp")
+
+    # Make C and O table
+    c_table(sa, fastaname)
+    o_table(sa, fastaname)
+
 
 else:
     # Creating second parser if -p is not given
@@ -99,6 +128,10 @@ else:
     parser2.add_argument('fastafile', help="Input fasta file")
     parser2.add_argument('fastqfile', help="Input fastq file")
     args2 = parser2.parse_args()
-    sa = parsers.read_SA_LCP(f"{args2.fastafile}.sa-lcp")
     fastq = parsers.read_fastq_file(args2.fastqfile)
-    search_fm(sa, fastq)
+    sa = parsers.read_SA(f"{args2.fastafile}.sa")
+    
+    o_dict = parsers.read_o(f"{args2.fastafile}.o-table")
+    c_dict = parsers.read_c(f"{args2.fastafile}.c-table")
+    
+    search_fm(sa, fastq, o_dict, c_dict)
