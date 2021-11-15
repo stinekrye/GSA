@@ -17,7 +17,6 @@ def binary1(p,x,sa,k, l, u): # returns a match in the SA
         else:
             high = mid
             mid = low + ((high-low)//2)
-
 def binary2(p,x,sa,k, mid, l, u, upper):
     if upper == False: # If we are searching for lower bound
         low = l
@@ -50,8 +49,6 @@ def binary2(p,x,sa,k, mid, l, u, upper):
                 high = mid
                 mid = low + ((high-low)//2)
     return mid
-
-
 def binary3(p,x,sa):
     l = 0
     u = len(sa)
@@ -70,7 +67,6 @@ def binary3(p,x,sa):
 
     else:
         return "No match"
-
 def search_bs(sa, fastq, test = False):
 
     if len(sa) < 0 or len(fastq) < 0:
@@ -108,8 +104,31 @@ def print_test(iter):
     for i in iter:
         print(i, file = sys.stdout)
 
-###################################
-# fastq = parsers.read_fastq_file("fastq_test.fq")
-# sa = parsers.read_SA_LCP("fasta_test.fa.sa-lcp")
-# res3 = search_bs(sa, fastq, test = True)
-# print_test(res3)
+#### RUNNING THE SCRIPT
+# If the -p option is given with a fastafile (e.g. "python search_st2.py -p test.fa"),
+# the script will construct a suffix tree, create the SA and LCP from it, and output the
+# two arrays to a textfile named "test.fa.sa-lcp".
+# If the script is not given the -p option, it takes two input files: a fastq file and a
+# fasta file name. From the fasta file name it finds a file that has the fasta name as
+# prefix and a suffix of .sa-lcp. From this it searches for the pattern found in the fastq
+# file.
+
+# Creating first parser
+parser1 = argparse.ArgumentParser(description='SA computation from suffix tree')
+parser1.add_argument('-p', help='Create SA from fastafile')
+args1 = parser1.parse_known_args()
+
+if args1[0].p:
+    fastafile = parsers.read_fasta_file(args1[0].p)
+    fastaname = f"{args1[0].p}"
+    gen_lcp.gen_lcp(fastafile, fastaname)
+
+else:
+    # Creating second parser if -p is not given
+    parser2 = argparse.ArgumentParser(description='Pattern matching using suffix tree')
+    parser2.add_argument('fastafile', help="Input fasta file")
+    parser2.add_argument('fastqfile', help="Input fastq file")
+    args2 = parser2.parse_args()
+    sa = parsers.read_SA_LCP(f"{args2.fastafile}.sa-lcp")
+    fastq = parsers.read_fastq_file(args2.fastqfile)
+    search_bs(sa, fastq)
