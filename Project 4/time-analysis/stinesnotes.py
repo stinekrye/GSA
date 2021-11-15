@@ -71,7 +71,7 @@ def binary3(p,x,sa):  # I have problems with this function.
     else:
         return None
 
-def search_bs(sa, fastq, test = False):
+def search_bs(sa, fastq):
 
     if len(sa) < 0 or len(fastq) < 0:
         return "Problems with either fastq file or the SA and LCP"
@@ -103,9 +103,9 @@ def search_bs(sa, fastq, test = False):
 
 
 # # Make test on large files
-# fasta = parsers.read_fasta_file(f"fasta_test.fa")
-# fastq = parsers.read_fastq_file(f"fastq_test.fq")
-# sa = parsers.read_SA_LCP(f"fasta_test.fa.sa-lcp")
+fasta = parsers.read_fasta_file(f"fasta_test.fa")
+fastq = parsers.read_fastq_file(f"fastq_test.fq")
+sa = parsers.read_SA_LCP(f"fasta_test.fa.sa-lcp")
 # #
 # # p = "ISGS"
 # # x = "MISSISSIPPI"
@@ -114,4 +114,4 @@ def search_bs(sa, fastq, test = False):
 # # res = binary3(p,x,sa)
 # # print(res)
 # #
-# search_bs(sa, fastq, test = False)
+search_bs(sa, fastq)
