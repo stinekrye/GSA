@@ -103,9 +103,9 @@ def search_bs(sa, fastq):
 
 
 # # Make test on large files
-fasta = parsers.read_fasta_file(f"fasta_test.fa")
-fastq = parsers.read_fastq_file(f"fastq_test.fq")
-sa = parsers.read_SA_LCP(f"fasta_test.fa.sa-lcp")
+# fasta = parsers.read_fasta_file(f"fasta_test.fa")
+# fastq = parsers.read_fastq_file(f"fastq_test.fq")
+# sa = parsers.read_SA_LCP(f"fasta_test.fa.sa-lcp")
 # #
 # # p = "ISGS"
 # # x = "MISSISSIPPI"
@@ -114,4 +114,4 @@ sa = parsers.read_SA_LCP(f"fasta_test.fa.sa-lcp")
 # # res = binary3(p,x,sa)
 # # print(res)
 # #
-search_bs(sa, fastq)
+# search_bs(sa, fastq)
