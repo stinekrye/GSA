@@ -1,4 +1,5 @@
 import parsers
+from gen_sa import gen_sa
 import sys
 def binary1(p,x,sa,k, l, u): # returns a match in the SA
     low = l
