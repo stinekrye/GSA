@@ -100,35 +100,7 @@ def search_bs(sa, fastq):
 
 
 ###################################
-p = "ISS"
-x = "MISSISSIPPI0"
-sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
-#
-# p = "AT"
-# x = "GAGAT"
-# sa = [5,1,3,0,2,4]
-# l = 0
-# u = len(x)
-
-#
-# p = "AA"
-# x = "AAAAA0"
-# sa = [5,4,3,2,1,0]
-
-
-# res = binary1(p,x,sa,k, l, u)
-# print(res)
-# res1 = binary2(p,x,sa,k,res,l, u, upper = True)
-# res2 = binary3(p,x,sa)
-
 fastq = parsers.read_fastq_file("fastq_test.fq")
 sa = parsers.read_SA_LCP("fasta_test.fa.sa-lcp")
 res3 = search_bs(sa, fastq)
 print(res3)
-
-
-# The lower bound is one past and the upper is the last one
-
-#############
-# Find a way to do the wrapper iteratively
-# I can find the upper and lower bound of an interval, but I have to run through all k and return a match if any is found
