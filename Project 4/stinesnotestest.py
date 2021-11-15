@@ -1,3 +1,4 @@
+# This script is used for the test
 
 import parsers
 import sys
@@ -51,7 +52,7 @@ def binary2(p,x,sa,k, mid, l, u, upper):
                 high = mid
                 mid = low + ((high-low)//2)
     return mid
-def binary3(p,x,sa):  # I have problems with this function.
+def binary3(p,x,sa):
     l = 0
     u = len(sa)
     k = 0
@@ -96,6 +97,16 @@ def search_bs(sa, fastq, test = False):
                     for match in matches:
                         pos = int(match) + 1
                         print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
+            if test == True:
+                if matches is not None:
+                    for match in matches:
+                        pos = int(match) + 1
+                        yield f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}"
+
+def print_test(iter):
+    iter = sorted(iter)
+    for i in iter:
+        print(i, file = sys.stdout)
 
 
 
@@ -103,15 +114,15 @@ def search_bs(sa, fastq, test = False):
 
 
 # # Make test on large files
-fasta = parsers.read_fasta_file(f"fasta_test.fa")
-fastq = parsers.read_fastq_file(f"fastq_test.fq")
-sa = parsers.read_SA_LCP(f"fasta_test.fa.sa-lcp")
+# fasta = parsers.read_fasta_file(f"fasta_test.fa")
+# fastq = parsers.read_fastq_file(f"fastq_test.fq")
+# sa = parsers.read_SA_LCP(f"fasta_test.fa.sa-lcp")
 #
-# p = "ISS"
-# x = "MISSISSIPPI"
-# sa = [11,10,7,4,1,0,9,8,6,3,5,2]
+# # p = "ISS"
+# # x = "MISSISSIPPI"
+# # sa = [11,10,7,4,1,0,9,8,6,3,5,2]
+# #
+# # res = binary3(p,x,sa)
+# # print(res)
 #
-# res = binary3(p,x,sa)
-# print(res)
-#
-search_bs(sa, fastq, test = False)
+# search_bs(sa, fastq, test = False)

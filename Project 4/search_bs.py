@@ -17,6 +17,7 @@ def binary1(p,x,sa,k, l, u): # returns a match in the SA
         else:
             high = mid
             mid = low + ((high-low)//2)
+
 def binary2(p,x,sa,k, mid, l, u, upper):
     if upper == False: # If we are searching for lower bound
         low = l
@@ -67,6 +68,7 @@ def binary3(p,x,sa):
 
     else:
         return "No match"
+
 def search_bs(sa, fastq, test = False):
 
     if len(sa) < 0 or len(fastq) < 0:
@@ -93,16 +95,8 @@ def search_bs(sa, fastq, test = False):
                     for match in matches:
                         pos = int(match) + 1
                         print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
-            if test == True:
-                if matches is not None:
-                    for match in matches:
-                        pos = int(match) + 1
-                        yield f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}"
 
-def print_test(iter):
-    iter = sorted(iter)
-    for i in iter:
-        print(i, file = sys.stdout)
+
 
 #### RUNNING THE SCRIPT
 # If the -p option is given with a fastafile (e.g. "python search_st2.py -p test.fa"),
@@ -132,3 +126,6 @@ else:
     sa = parsers.read_SA_LCP(f"{args2.fastafile}.sa-lcp")
     fastq = parsers.read_fastq_file(args2.fastqfile)
     search_bs(sa, fastq)
+
+
+# Commandline tool is not working
