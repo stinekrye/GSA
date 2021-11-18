@@ -1,3 +1,4 @@
+
 import numpy as np
 import gen_sa, parsers
 import sys, argparse, json
@@ -16,7 +17,7 @@ def c_table(sa_dict, fastaname):
             if char not in buckets:
                 buckets[char] = i
         
-        f.write(">" + str(key) + "\t" + str(value[0]) + "\n")
+        f.write(">" + str(key) + "\n")
         f.write(str(buckets) + "\n")
     f.close()
 
@@ -42,8 +43,8 @@ def o_table(sa_dict, fastaname):
                 else: 
                     O[i][a] = O[i - 1][a]
         
-        f.write(">" + str(key) + "\t" + str(value[0]) + "\n")
-        f.write(str(O) + "\n")
+        f.write(">" + str(key) + "\n")
+        f.write(str(O.tolist()) + "\n")
 
     f.close()
 
@@ -83,8 +84,8 @@ def search_fm(sa, fastq, o_dict, c_dict):
             qual = p[1][1]
 
             alpha = {a:i for i, a in enumerate(sorted(set(y)))}
-            O = o_table(y, sa)
-            C = c_table(y, sa)
+            O = o_dict[rname]
+            C = c_dict[rname]
 
             matches = fm_search(O, C, substring, sa, alpha)
 
@@ -135,3 +136,4 @@ else:
     c_dict = parsers.read_c(f"{args2.fastafile}.c-table")
     
     search_fm(sa, fastq, o_dict, c_dict)
+

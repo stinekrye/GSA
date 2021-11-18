@@ -1,4 +1,4 @@
->one	mississippi
+>one
 {'$': 0, 'i': 1, 'm': 5, 'p': 6, 's': 8}
->two	mississippimississippi
+>two
 {'$': 0, 'i': 1, 'm': 9, 'p': 11, 's': 15}
