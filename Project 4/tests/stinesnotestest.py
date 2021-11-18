@@ -1,6 +1,6 @@
-import gen_sa, parsers
-import sys, argparse
-
+import parsers
+from gen_sa import gen_sa
+import sys
 def binary1(p,x,sa,k, l, u): # returns a match in the SA
     low = l
     high = u
@@ -70,7 +70,7 @@ def binary3(p,x,sa):  # I have problems with this function.
     else:
         return None
 
-def search_bs(sa, fastq):
+def search_bs(sa, fastq, test = False):
 
     if len(sa) < 0 or len(fastq) < 0:
         return "Problems with either fastq file or the SA and LCP"
@@ -90,42 +90,37 @@ def search_bs(sa, fastq):
             qual = p[1][1]
 
             matches = binary3(substring, y, sa)
+            # matches = sorted(matches)
             if matches is not None:
                 for match in matches:
                     pos = int(match) + 1
                     print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
+            if test == True:
+                if matches is not None:
+                    for match in matches:
+                        pos = int(match) + 1
+                        yield f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}"
+
+def print_test(iter):
+    iter = sorted(iter)
+    for i in iter:
+        print(i, file = sys.stdout)
 
 
-#### RUNNING THE SCRIPT
-# If the -p option is given with a fastafile (e.g. "python search_st2.py -p test.fa"),
-# the script will construct a suffix tree, create the SA and LCP from it, and output the
-# two arrays to a textfile named "test.fa.sa-lcp".
-# If the script is not given the -p option, it takes two input files: a fastq file and a
-# fasta file name. From the fasta file name it finds a file that has the fasta name as
-# prefix and a suffix of .sa-lcp. From this it searches for the pattern found in the fastq
-# file.
-
-# Creating first parser
-parser1 = argparse.ArgumentParser(description='SA computation from suffix tree')
-parser1.add_argument('-p', help='Create SA from fastafile')
-args1 = parser1.parse_known_args()
-
-if args1[0].p:
-    fastafile = parsers.read_fasta_file(args1[0].p)
-    fastaname = f"{args1[0].p}"
-
-    # Make suffix array and read file
-    gen_sa.gen_sa(fastafile, fastaname)
-    sa = parsers.read_SA(f"{fastaname}.sa")
 
 
-else:
-    # Creating second parser if -p is not given
-    parser2 = argparse.ArgumentParser(description='Pattern matching using suffix tree')
-    parser2.add_argument('fastafile', help="Input fasta file")
-    parser2.add_argument('fastqfile', help="Input fastq file")
-    args2 = parser2.parse_args()
-    fastq = parsers.read_fastq_file(args2.fastqfile)
-    sa = parsers.read_SA(f"{args2.fastafile}.sa")
 
-    search_bs(sa, fastq)
+
+# # Make test on large files
+# fasta = parsers.read_fasta_file(f"fasta_test.fa")
+# fastq = parsers.read_fastq_file(f"fastq_test.fq")
+# sa = parsers.read_SA_LCP(f"fasta_test.fa.sa-lcp")
+#
+# # p = "ISS"
+# # x = "MISSISSIPPI"
+# # sa = [11,10,7,4,1,0,9,8,6,3,5,2]
+# #
+# # res = binary3(p,x,sa)
+# # print(res)
+#
+# search_bs(sa, fastq, test = False)
