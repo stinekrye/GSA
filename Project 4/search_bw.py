@@ -1,7 +1,7 @@
 
 import numpy as np
 import gen_sa, parsers
-import sys, argparse, json
+import sys, argparse
 
 def c_table(sa_dict, fastaname):
     f = open(f"{fastaname}.c-table", "w")
@@ -116,7 +116,7 @@ if args1[0].p:
 
     # Make suffix array and read file
     gen_sa.gen_sa(fastafile, fastaname)
-    sa = parsers.read_SA(f"{fastaname}.sa-lcp")
+    sa = parsers.read_SA(f"{fastaname}.sa")
 
     # Make C and O table
     c_table(sa, fastaname)
