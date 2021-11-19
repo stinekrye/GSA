@@ -115,7 +115,6 @@ def read_c(file):
 
 def read_o(file):
     o_table = {}
-    current, current_o, sequence = None, None, None
     with open(file) as fp:
         for line in fp:
             line = line.strip()
