@@ -1,6 +1,7 @@
-
 from os import read
 import ast
+import numpy as np
+import json
 
 
 def read_fasta_file(filename):
@@ -97,21 +98,14 @@ def read_SA_LCP(file):
 
 def read_c(file):
     c_table = {}
-    current_c, sequence = None, None
     with open(file) as fp:
         for line in fp:
-            line = line.rstrip()
+            line = line.strip()
             if line.startswith('>'):
-                line = line.split()
-                sequence_name = line[0].lstrip('>')
-                sequence = line[1]
-                current_c = []
-                c_table[sequence_name] = current_c
-                current_c.append(sequence)
+                sequence_name = line.lstrip('>')
             else:
-                if current_c is not None:
-                    line = ast.literal_eval(line)
-                    current_c.append(line)
+                line = ast.literal_eval(line)
+                c_table[sequence_name] = line
     seqs = {}
     for name, lines in c_table.items():
         seqs[name] = lines
@@ -120,20 +114,14 @@ def read_c(file):
 
 def read_o(file):
     o_table = {}
-    current, current_o, sequence = None, None, None
     with open(file) as fp:
         for line in fp:
-            line = line.rstrip()
+            line = line.strip()
             if line.startswith('>'):
-                line = line.split()
-                sequence_name = line[0].lstrip('>')
-                sequence = line[1]
-                current = []
-                o_table[sequence_name] = current
-                current.append(sequence)
+                sequence_name = line.lstrip('>')
             else:
-                if current is not None:
-                    current.append(line)
+                line = ast.literal_eval(line)
+                o_table[sequence_name] = line
     seqs = {}
     for name, lines in o_table.items():
         seqs[name] = lines
