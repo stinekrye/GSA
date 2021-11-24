@@ -46,7 +46,7 @@ def LMS_array(t_table):
 ### Step 3: Helper functions
 #### Create alpha: Helper function
 def lms_eq(lms1,lms2,seq, LMS): # Will break of it gets two identical LMS sequences which both are the last LMS index
-    non_zero_LMS = np.nonzero(LMS)[0]
+    non_zero_LMS = LMS[np.nonzero(LMS)]
 
     ## Preprocess so we can find length of each LMS string
     if lms1 != non_zero_LMS[-1]:
@@ -78,32 +78,32 @@ def create_alpha(bins,LMS,seq):
     first = True
     for i in bins:
         if first:
-            if i in np.nonzero(LMS)[0]:
+            if i in LMS[np.nonzero(LMS)]:
                 first = False
                 alpha[i] = a
                 prev = i
 
 
-        elif i in np.nonzero(LMS)[0]:
+        elif i in LMS[np.nonzero(LMS)]:
             if not lms_eq(i,prev,seq, LMS):# function to compare two strings
                 a += 1
             alpha[i] = a
             prev = i
 
-    return alpha
+    return alpha[np.nonzero(alpha)]-1
 
 
 
 ### Step 3: sort the LMS strings
 
-def induced_sorting(seq, LMS, t_table):
+def induced_sorting(seq, LMS, ttable, map):
     nlms = np.count_nonzero(LMS)
-    bins = np.zeros([len(LMS)], dtype=int)
+    bins = np.zeros([len(seq)], dtype=int)
     bin_start, counter_len = counts(seq) # The sequence is remapped so the index = the remapped letter
 
     ### Insert the LMS strings
     counter = np.zeros([counter_len], dtype = int)
-    for i in np.nonzero(LMS)[0]: # Insert LMS strings in the bottom of their bin
+    for i in reversed(LMS[np.nonzero(LMS)]): # Insert LMS strings in the bottom of their bin. Has to be reverse because it starts at the bottom
         location = bin_start[seq[int(i)]+1]-1-counter[seq[int(i)]] # gives the location in the bin # We want the LMS strings to be found in the bottom of their bin
         bins[location] = int(i)
         counter[seq[int(i)]] += 1
@@ -111,7 +111,7 @@ def induced_sorting(seq, LMS, t_table):
     ### Insert the runs of L
     counter = np.zeros([counter_len], dtype = int)
     for i in bins:
-        if i != 0 and t_table[i-1] == "L":
+        if i != 0 and ttable[i-1] == "L":
             location = bin_start[seq[int(i-1)]]+counter[seq[int(i-1)]]
             bins[location] = int(i-1)
             counter[seq[int(i-1)]] += 1
@@ -119,18 +119,33 @@ def induced_sorting(seq, LMS, t_table):
     ### Insert the runs of S
     counter = np.zeros([counter_len], dtype = int)
     for i in reversed(bins):
-        if i != 0 and t_table[i-1] == "S":
+        if i != 0 and ttable[i-1] == "S":
             location = bin_start[seq[int(i-1)]+1]-1-counter[seq[int(i-1)]]
             bins[location] = int(i-1)
             counter[seq[int(i-1)]] += 1
 
 
+    if map == True:
+        ### Create alpha
+        a = create_alpha(bins,LMS,seq)
+        a.size
+        a[0]
+        if a.size == 1 and a[0] == 0:
+            return bins
+        else:
+            a_tTable = t_table(a)
+            a_LMS = LMS_array(a_tTable)
+            return induced_sorting(a,a_LMS, a_tTable, map = True)
+    else:
+        return bins
 
-    ### Create alpha
-    a = create_alpha(bins,LMS,seq)
-    print(a)
-    print(np.nonzero(a))
-    return "test"
+
+def LMS_order(map_LMS, LMS):
+    nLMS = LMS[np.nonzero(LMS)]
+    sa_LMS = np.empty([len(nLMS)], dtype= int)
+    for i in range(len(map_LMS)):
+        sa_LMS[i] = nLMS[map_LMS[i]]
+    return sa_LMS
 
 
 
@@ -145,9 +160,12 @@ def construct_sa_lcp(seq):
     LMS = LMS_array(tTable)
 
     ### No prints until here ####
-    test = induced_sorting(x,LMS, tTable)
+    map_LMS = induced_sorting(x,LMS, tTable, map = True)
+    sa_LMS = LMS_order(map_LMS, LMS)
 
-    return test
+    sorted = induced_sorting(x,sa_LMS, tTable, map = False)
+
+    return sorted
 
 ### Goal: make bin size with the LMS strings as well
 
@@ -159,6 +177,7 @@ def construct_sa_lcp(seq):
 
 #####
 x = "mississippi0"
+x = "TILFALDIG0"
 res = construct_sa_lcp(x)
 print(res)
 
