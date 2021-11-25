@@ -1,6 +1,7 @@
 import numpy as np
 import parsers
 ## Helper functions
+# Optimize lms_eq and create alpha
 
 # Remaps sequence
 def remap(x):
@@ -38,24 +39,22 @@ def LMS_array(t_table):
     for i in range(len(t_table)):
         if t_table[i] == "S" and t_table[i-1] == "L":
             LMS[i] = i
-    return LMS
+    return np.nonzero(LMS)[0]
 
 
 
 ### Step 3: Helper functions
 #### Create alpha: Helper function
 def lms_eq(lms1,lms2,seq, LMS): # Will break of it gets two identical LMS sequences which both are the last LMS index
-    non_zero_LMS = LMS[np.nonzero(LMS)]
-
     ## Preprocess so we can find length of each LMS string
-    if lms1 != non_zero_LMS[-1]:
-        lms1_end = non_zero_LMS[np.where(non_zero_LMS == lms1)[0]+1]
+    if lms1 != LMS[-1]:
+        lms1_end = LMS[np.where(LMS == lms1)[0]+1]
     else:
-        lms1_end = non_zero_LMS[-1]
-    if lms2 != non_zero_LMS[-1]:
-        lms2_end = non_zero_LMS[np.where(non_zero_LMS == lms2)[0]+1]
+        lms1_end = LMS[-1]
+    if lms2 != LMS[-1]:
+        lms2_end = LMS[np.where(LMS == lms2)[0]+1]
     else:
-        lms2_end = non_zero_LMS[-1]
+        lms2_end = LMS[-1]
 
     ## Compare the length of the lms strings
     if lms1_end-lms1 != lms2_end-lms2:
@@ -76,13 +75,13 @@ def create_alpha(bins,LMS,seq):
     first = True
     for i in bins:
         if first:
-            if i in LMS[np.nonzero(LMS)]:
+            if i in LMS:
                 first = False
                 alpha[i] = a
                 prev = i
 
 
-        elif i in LMS[np.nonzero(LMS)]:
+        elif i in LMS:
             if not lms_eq(i,prev,seq, LMS):# function to compare two strings
                 a += 1
             alpha[i] = a
@@ -95,13 +94,12 @@ def create_alpha(bins,LMS,seq):
 ### Step 3: sort the LMS strings
 
 def induced_sorting(seq, LMS, ttable, map):
-    nlms = np.count_nonzero(LMS)
     bins = np.zeros([len(seq)], dtype=int)
     bin_start, counter_len = counts(seq) # The sequence is remapped so the index = the remapped letter
 
     ### Insert the LMS strings
     counter = np.zeros([counter_len], dtype = int)
-    for i in reversed(LMS[np.nonzero(LMS)]): # Insert LMS strings in the bottom of their bin. Has to be reverse because it starts at the bottom
+    for i in reversed(LMS): # Insert LMS strings in the bottom of their bin. Has to be reverse because it starts at the bottom
         location = bin_start[seq[int(i)]+1]-1-counter[seq[int(i)]] # gives the location in the bin # We want the LMS strings to be found in the bottom of their bin
         bins[location] = int(i)
         counter[seq[int(i)]] += 1
@@ -142,7 +140,7 @@ def induced_sorting(seq, LMS, ttable, map):
             return bins
 
 def LMS_order(map_LMS, LMS):
-    nLMS = LMS[np.nonzero(LMS)]
+    nLMS = LMS
     sa_LMS = np.zeros([len(nLMS)], dtype= int)
     for i in range(len(map_LMS)):
         sa_LMS[i] = nLMS[map_LMS[i]]
@@ -187,8 +185,8 @@ def gen_sa(fastadict, fastaname):
 # Find a proper way to deal with the remapping to numbers and addition of 0
 # fastafile = parsers.read_fasta_file("fasta_test.fa")
 # fastaname = "fasta_test.fa"
-fastafile = parsers.read_fasta_file("debugtest.fasta")
-fastaname = "debugtest.fasta"
+# fastafile = parsers.read_fasta_file("debugtest.fasta")
+# fastaname = "debugtest.fasta"
 
 fastafile = parsers.read_fasta_file("n_100000.fasta")
 fastaname = "n_100000.fasta"
