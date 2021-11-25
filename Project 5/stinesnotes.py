@@ -1,6 +1,5 @@
 import numpy as np
 import parsers
-from numba import jit
 ## Helper functions
 
 # Remaps sequence
@@ -71,7 +70,6 @@ def lms_eq(lms1,lms2,seq, LMS): # Will break of it gets two identical LMS sequen
             i += 1
     return True
 
-
 def create_alpha(bins,LMS,seq):
     alpha = np.zeros([len(bins)], dtype = int)
     a = 1
@@ -141,7 +139,6 @@ def induced_sorting(seq, LMS, ttable, map):
                 return induced_sorting(a,a_LMS, a_tTable, map = True)
     else:
         return bins
-
 
 def LMS_order(map_LMS, LMS):
     nLMS = LMS[np.nonzero(LMS)]
