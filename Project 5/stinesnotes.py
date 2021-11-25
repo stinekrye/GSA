@@ -1,6 +1,6 @@
 import numpy as np
-import pandas as pd
-
+import parsers
+from numba import jit
 ## Helper functions
 
 # Remaps sequence
@@ -153,10 +153,7 @@ def LMS_order(map_LMS, LMS):
 
 
 
-
-
-
-def construct_sa_lcp(seq):
+def construct_sa(seq):
     x = remap(seq)[0]
     x = np.array(list(x), dtype=int)
     tTable = t_table(x)
@@ -172,18 +169,24 @@ def construct_sa_lcp(seq):
         sorted = induced_sorting(x,sa_LMS, tTable, map = False)
         return sorted
 
-### Goal: make bin size with the LMS strings as well
+def gen_sa(fastadict, fastaname):
+    f = open(f"{fastaname}.sa", "w")
 
+    # # Generate tree, SA and LCP arrays
+    for key, value in fastadict.items():
+        seq = value+"0" # Find a better way to do this
+        SA = construct_sa(seq)
 
-
-
+    # Write file
+        f.write(">" + str(key) + "\t" + str(seq) + "\n")
+        for i in range(len(SA)):
+            f.write(f"{SA[i]} \n")
 
 
 
 #####
-# Find a proper way to deal with the remapping to numbers
-# x = "mississippi0"
-x = "GGGGGG0"
-res = construct_sa_lcp(x)
-print(res)
+# Find a proper way to deal with the remapping to numbers and addition of 0
+fastafile = parsers.read_fasta_file("fasta_test.fa")
+fastaname = "fasta_test.fa"
+res = gen_sa(fastafile,fastaname)
 
