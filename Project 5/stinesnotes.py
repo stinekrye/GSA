@@ -21,7 +21,7 @@ def counts(seq):
 
 ### Step 1: Construct t table
 def t_table(seq):
-    t = np.empty([len(seq)], dtype = str)
+    t = np.zeros([len(seq)], dtype = str)
     t[len(seq)-1] = "S"
     for i in reversed(range(len(seq)-1)):
         if seq[i] < seq[i+1]:
@@ -127,22 +127,23 @@ def induced_sorting(seq, LMS, ttable, map):
         ### Create alpha
         a = create_alpha(bins,LMS,seq)
         a.size
-        a[0]
         if a.size == 1 and a[0] == 0:
             return bins
         else:
             a_tTable = t_table(a)
             a_LMS = LMS_array(a_tTable)
-            if len(np.unique(a_LMS)) == len(a_LMS):
+            g = np.unique(a)
+            f = len(a)
+            if len(np.unique(a)) == len(a):
                 return bins
             else:
-                return induced_sorting(a,a_LMS, a_tTable, map = True)
-    else:
-        return bins
+                induced_sorting(a,a_LMS, a_tTable, map = True)
+
+            return bins
 
 def LMS_order(map_LMS, LMS):
     nLMS = LMS[np.nonzero(LMS)]
-    sa_LMS = np.empty([len(nLMS)], dtype= int)
+    sa_LMS = np.zeros([len(nLMS)], dtype= int)
     for i in range(len(map_LMS)):
         sa_LMS[i] = nLMS[map_LMS[i]]
     return sa_LMS
@@ -172,6 +173,7 @@ def gen_sa(fastadict, fastaname):
     # # Generate tree, SA and LCP arrays
     for key, value in fastadict.items():
         seq = value+"0" # Find a better way to do this
+        print("i")
         SA = construct_sa(seq)
 
     # Write file
@@ -183,8 +185,13 @@ def gen_sa(fastadict, fastaname):
 
 #####
 # Find a proper way to deal with the remapping to numbers and addition of 0
-fastafile = parsers.read_fasta_file("fasta_test.fa")
-fastaname = "fasta_test.fa"
+# fastafile = parsers.read_fasta_file("fasta_test.fa")
+# fastaname = "fasta_test.fa"
+fastafile = parsers.read_fasta_file("debugtest.fasta")
+fastaname = "debugtest.fasta"
+
+fastafile = parsers.read_fasta_file("n_100000.fasta")
+fastaname = "n_100000.fasta"
 
 res = gen_sa(fastafile,fastaname)
 
