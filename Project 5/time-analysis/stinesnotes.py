@@ -171,7 +171,7 @@ def gen_sa(fastadict, fastaname):
 
     # # Generate tree, SA and LCP arrays
     for key, value in fastadict.items():
-        seq = value+"0" # Find a better way to do this
+        seq = value +"0" # Find a better way to do this
         SA = construct_sa(seq)
 
     # Write file
@@ -183,8 +183,7 @@ def gen_sa(fastadict, fastaname):
 
 #####
 # Find a proper way to deal with the remapping to numbers and addition of 0
-fastafile = parsers.read_fasta_file("fasta_test.fa")
-fastaname = "fasta_test.fa"
-
-res = gen_sa(fastafile,fastaname)
+# fastafile = parsers.read_fasta_file("fasta_test.fa")
+# fastaname = "fasta_test.fa"
+# res = gen_sa(fastafile,fastaname)
 
