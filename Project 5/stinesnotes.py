@@ -135,7 +135,10 @@ def induced_sorting(seq, LMS, ttable, map):
         else:
             a_tTable = t_table(a)
             a_LMS = LMS_array(a_tTable)
-            return induced_sorting(a,a_LMS, a_tTable, map = True)
+            if len(np.unique(a_LMS)) == len(a_LMS):
+                return bins
+            else:
+                return induced_sorting(a,a_LMS, a_tTable, map = True)
     else:
         return bins
 
@@ -160,12 +163,14 @@ def construct_sa_lcp(seq):
     LMS = LMS_array(tTable)
 
     ### No prints until here ####
-    map_LMS = induced_sorting(x,LMS, tTable, map = True)
-    sa_LMS = LMS_order(map_LMS, LMS)
+    map_LMS = induced_sorting(x, LMS, tTable, map=True)
+    if len(map_LMS) == len(x):
+        return map_LMS
 
-    sorted = induced_sorting(x,sa_LMS, tTable, map = False)
-
-    return sorted
+    else:
+        sa_LMS = LMS_order(map_LMS, LMS)
+        sorted = induced_sorting(x,sa_LMS, tTable, map = False)
+        return sorted
 
 ### Goal: make bin size with the LMS strings as well
 
@@ -176,8 +181,9 @@ def construct_sa_lcp(seq):
 
 
 #####
-x = "mississippi0"
-x = "TILFALDIG0"
+# Find a proper way to deal with the remapping to numbers
+# x = "mississippi0"
+x = "GGGGGG0"
 res = construct_sa_lcp(x)
 print(res)
 
