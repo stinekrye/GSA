@@ -43,13 +43,12 @@ def d_table(RO, C, sa, p, alpha):
     m = len(p)
     L, R = 0, len(sa)
     d = np.zeros(m)
-    rev_p = p[::-1]
 
     for i in range(m):
-        a = rev_p[i]
+        a = p[i]
         L = C[a] + RO[int(L)][alpha[a]]
         R = C[a] + RO[int(R)][alpha[a]]
-        if L >= R:
+        if L >= R: 
             min_edits += 1
             L = 0
             R = len(sa)
@@ -60,8 +59,9 @@ def d_table(RO, C, sa, p, alpha):
 x = "mississippi$"
 sa_dict = {"one":["mississippi", [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]]}
 sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
-rsa_dict = {"one":["ippississim", [11, 9, 0, 6, 3, 10, 2, 1, 8, 5, 7, 4]]}
-p = "iss"
+rsa_dict = {"one":["mississippi", [11, 9, 0, 6, 3, 10, 2, 1, 8, 5, 7, 4]]}
+ 
+p = "isi"
 alpha = {a:i for i, a in enumerate(sorted(set(x)))}
 O = o_table(sa_dict)
 C = c_table(sa_dict)
@@ -74,7 +74,7 @@ def bw_approx(O, C, p, d, sa, alpha, max_edits):
     matches = None
     L, R = 0, len(sa)
     i = len(p) - 1
-    cigar = ''
+    cigar = {'M': 0, 'I': 0, 'D': 0}
     no_edits = 0
     
     # Match
@@ -89,13 +89,13 @@ def bw_approx(O, C, p, d, sa, alpha, max_edits):
         
         if max_edits - edit_cost < 0: continue
         if new_L >= new_R: continue
-        cigar += 'M'
+        cigar['M'] += 1
         matches = rec_approx(
             d, sa, new_L, new_R, i - 1, 
             max_edits - edit_cost, cigar, no_edits + 1)
 
     # Insertion
-    cigar += 'I'
+    cigar['I'] += 1
     matches = rec_approx(
         d, sa, L, R, i - 1, max_edits - 1, cigar, no_edits + 1)
 
@@ -125,14 +125,14 @@ def rec_approx(d, sa, L, R, i, edits_left, cigar, no_edits):
         if edits_left - edit_cost < 0: continue
         if new_L >= new_R: continue
 
-        cigar += 'M'
+        cigar['M'] += 1
         rec_approx(d, sa, new_L, new_R, i - 1, edits_left - edit_cost, cigar, no_edits + 1)
     
-    cigar += 'I'
+    cigar['I'] += 1
     rec_approx(d, sa, L, R, i - 1, edits_left - 1, cigar, no_edits + 1)
 
     #  Deletion
-    cigar += 'D'
+    cigar['D'] += 1
     for a in list(alpha.keys())[1:]:
         new_L = C[a] + O[int(L)][alpha[a]]
         new_R = C[a] + O[int(R)][alpha[a]]

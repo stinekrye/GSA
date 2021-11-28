@@ -1,5 +1,5 @@
 import gen_lcp, parsers
-import sys, argparse
+import sys, argparse, itertools
 
 def remap(x):
     m = {a:i for i,a in enumerate(sorted(set(x)))}
@@ -120,27 +120,54 @@ class SuffixTree2():
             if self.seq[child.range_start] == char:
                 return child
 
-    def search_rec(self,c,x,k, n):
+    def recurse_children():
+        return
 
-        child = self.find_edge_search(c, n[x])
+    def approx_search(self, node, x, k, n, cigar, edits):
+        
+        child = self.find_edge_search(node, n[x])
         if child:  # If we have an outgoing edge
             k = child.range_start
             while k < child.range_end and x < len(n) and self.seq[k] == n[x]:  # self.root.range_start has to be the beginning of the match. In other words: We have to begin at each node instead of the root
                 x += 1
                 k += 1
-            if k >= child.range_end and x < len(n):  # if we reach the end of the edge, and we have not found a match, we have to search down a new node
-                return self.search_rec(child, x, k, n)
-            elif x == len(n):  # if we reach the end of an edge and we find a match (also works on edges
+
+                if 'M' not in cigar:
+                    cigar['M'] = 1
+                else:
+                    cigar['M'] += 1
+
+            if edits < 0: # We've used too many edits
+                return None
+            
+            elif x == len(n):  # We've found a match
                 res = return_labels(child)
-                return res  # Be carefull with this recursion
+                return res, cigar  # Return both the interval and the cigar
+            
+            elif k >= child.range_end and x < len(n):  # if we reach the end of the edge, and we have not found a match, we have to search down a new node
+                return self.approx_search(child, x, k, n, cigar, edits) # We need a recurse_children here
+            
+            elif self.seq[k] != n[x]:
+                if 'D' not in cigar:
+                    cigar['D'] = 1
+                else:
+                    cigar['D'] += 1
+
+                return self.approx_search(child, x, k + 1, n, cigar, edits - 1)
+            elif self.seq[k] != n[x]:
+                if 'I' not in cigar:
+                    cigar['I'] = 1
+                else:
+                    cigar['I'] += 1
+
+                return self.approx_search(child, x + 1, k, n, cigar, edits - 1)
             else:
                 return None
         else:
             return None
 
-
 # Wrapper function
-def search_suffix(sa_lcp, fastq):
+def search_suffix(sa_lcp, fastq, no_edits):
 
     if len(sa_lcp) < 0 or len(fastq) < 0:
         return "Problems with either fastq file or the SA and LCP"
@@ -163,21 +190,22 @@ def search_suffix(sa_lcp, fastq):
         for p in fastq.items():
             qname = p[0]
             substring = p[1][0]
-            cigar = str(len(substring)) + "M"
             qual = p[1][1]
 
             seq = [tree.alpha[a] for a in substring]
+            cigar = {}
 
-            matches = tree.search_rec(tree.root, 0, 0, seq)
+            matches, cigars = tree.approx_search(tree.root, 0, 0, seq, cigar, no_edits)
+
 
             if matches is not None:
-                for match in matches:
+                for match, cigar in itertools.zip_longest(matches, cigars):
                     pos = int(match) + 1
+                    cigar = ''.join([f'{value}{key}'for key, value in cigars.items()])
                     print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
-
-sa_lcp = parsers.read_SA_LCP("SA_LCP_fasta1.txt")
-fastq = parsers.read_fastq_file("fastq_test.fq")
-search_suffix(sa_lcp, fastq)
+sa_lcp = {"seq1": ["mississippi", [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2], [0, 0, 1, 1, 4, 0, 0, 1, 0, 2, 1, 3]]}
+fastq = {"isi": ["isi", "~~~"]}
+search_suffix(sa_lcp, fastq, 1)
 
 #### RUNNING THE SCRIPT
 # If the -p option is given with a fastafile (e.g. "python search_st2.py -p test.fasta"), 

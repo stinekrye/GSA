@@ -122,3 +122,5 @@ def gen_sa(fastadict, fastaname):
 
 
     return "Done"
+fasta = {"one": "ippississim"}
+gen_sa(fasta, 'test_fa')
