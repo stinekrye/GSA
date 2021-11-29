@@ -130,8 +130,6 @@ def induced_sorting(seq, LMS, ttable, map):
         else:
             a_tTable = t_table(a)
             a_LMS = LMS_array(a_tTable)
-            g = np.unique(a)
-            f = len(a)
             if len(np.unique(a)) == len(a):
                 return bins
             else:
@@ -165,13 +163,15 @@ def construct_sa(seq):
         sorted = induced_sorting(x,sa_LMS, tTable, map = False)
         return sorted
 
-def gen_sa(fastadict, fastaname):
+def gen_sa(fastadict, fastaname, reverse = False):
     f = open(f"{fastaname}.sa", "w")
 
     # # Generate tree, SA and LCP arrays
     for key, value in fastadict.items():
         seq = value+"0" # Find a better way to do this
-        print("i")
+        if reverse == True:
+            seq = reverse(seq)
+
         SA = construct_sa(seq)
 
     # Write file
