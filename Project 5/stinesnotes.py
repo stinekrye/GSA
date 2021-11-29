@@ -185,11 +185,11 @@ def gen_sa(fastadict, fastaname, reverse = False):
 # Find a proper way to deal with the remapping to numbers and addition of 0
 # fastafile = parsers.read_fasta_file("fasta_test.fa")
 # fastaname = "fasta_test.fa"
-# fastafile = parsers.read_fasta_file("debugtest.fasta")
-# fastaname = "debugtest.fasta"
+fastafile = parsers.read_fasta_file("debugtest.fasta")
+fastaname = "debugtest.fasta"
 
-fastafile = parsers.read_fasta_file("n_100000.fasta")
-fastaname = "n_100000.fasta"
+# fastafile = parsers.read_fasta_file("n_100000.fasta")
+# fastaname = "n_100000.fasta"
 
 res = gen_sa(fastafile,fastaname)
 
