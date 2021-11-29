@@ -66,6 +66,8 @@ def bw_approx(O, C, p, d, sa, alpha, max_edits):
     cigar = np.zeros(len(p)+max_edits, dtype = str)
     ci = 0
     no_edits = 0
+    string = np.zeros(len(p)+max_edits, dtype = str)
+    bwt_string = np.zeros(len(p)+max_edits, dtype = str)
 
     # Match
     for a in list(alpha.keys())[1:]:
@@ -82,18 +84,25 @@ def bw_approx(O, C, p, d, sa, alpha, max_edits):
         if new_L >= new_R: continue
 
         cigar[ci] = "M" # Change til to be generalized
+        string[ci] = p[i]
+        bwt_string[ci] = a
         ci += 1
-        return rec_approx(O, d, sa, new_L, new_R, i - 1, max_edits - edit_cost, cigar, no_edits + 1, ci)#
+        print("cigar", cigar)
+        print("pattern", string)
+        print("pattern in sa", bwt_string)
+        rec_approx(O, d, sa, new_L, new_R, i - 1, max_edits - edit_cost, cigar, no_edits + 1, ci, string, bwt_string)#
 
     # Insertion
     cigar[ci] = "I"  # Change til to be generalized
     ci += 1
-    return rec_approx(O, d, sa, L, R, i - 1, max_edits - 1, cigar, no_edits + 1, ci)
+    string[ci] = p[i]
+    bwt_string[ci] = a
+    rec_approx(O, d, sa, L, R, i - 1, max_edits - 1, cigar, no_edits + 1, ci, string, bwt_string)
 
     return matches, cigar
 
 
-def rec_approx(O, d, sa, L, R, i, edits_left, cigar, no_edits, ci):
+def rec_approx(O, d, sa, L, R, i, edits_left, cigar, no_edits, ci, string, bwt_string):
     lower_limit = d[i]
     if edits_left < lower_limit: # The order of these have changed
         return None, None
@@ -116,12 +125,16 @@ def rec_approx(O, d, sa, L, R, i, edits_left, cigar, no_edits, ci):
 
         cigar[ci] = "M" # Change til to be generalized
         ci += 1
-        return rec_approx(O, d, sa, new_L, new_R, i - 1, edits_left - edit_cost, cigar, no_edits + 1, ci)
+        string[ci] = p[i]
+        bwt_string[ci] = a
+        rec_approx(O, d, sa, new_L, new_R, i - 1, edits_left - edit_cost, cigar, no_edits + 1, ci, string, bwt_string)
 
     # Insertion
     cigar[ci] = "I"  # Change til to be generalized
     ci += 1
-    return rec_approx(O, d, sa, L, R, i - 1, edits_left - 1, cigar, no_edits + 1, ci)
+    string[ci] = p[i]
+    bwt_string[ci] = a
+    rec_approx(O, d, sa, L, R, i - 1, edits_left - 1, cigar, no_edits + 1, ci, string, bwt_string)
 
     #  Deletion
     cigar[ci] = "D"  # Change til to be generalized
@@ -131,18 +144,20 @@ def rec_approx(O, d, sa, L, R, i, edits_left, cigar, no_edits, ci):
         new_R = C[a] + O[int(R)][alpha[a]]
         if new_L >= new_R: continue
 
-        return rec_approx(O, d, sa, new_L, new_R, i, edits_left - 1, cigar, no_edits + 1, ci)
+        string[ci] = p[i]
+        bwt_string[ci] = a
+        rec_approx(O, d, sa, new_L, new_R, i, edits_left - 1, cigar, no_edits + 1, ci, string, bwt_string)
 
     matches = sa[int(L):int(R)]
 
-    return matches, cigar
+    # return matches, cigar
 
 
 x = "mississippi$"
 sa_dict = {"one": ["mississippi", [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]]}
 rsa_dict = {"one": ["mississippi", [0, 10, 1, 7, 4, 11, 3, 2, 9, 6, 8, 5]]}
 
-p = "iss"
+p = "is"
 sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
 alpha = {a: i for i, a in enumerate(sorted(set(x)))}
 O = o_table(sa_dict)
@@ -150,7 +165,7 @@ C = c_table(sa_dict)
 RO = o_table(rsa_dict)
 d = d_table(RO, C, sa, p, alpha)
 
-bw_approx(O, C, p, d, sa, alpha, 0)
+bw_approx(O, C, p, d, sa, alpha, 1)
 
 
 def search_bw(sa, fastq, o_dict, c_dict, ro_dict):
