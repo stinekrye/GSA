@@ -1,6 +1,6 @@
 import numpy as np
 import gen_sa, parsers
-import sys, argparse
+import sys, argparse, itertools
 
 def c_table(sa):
     buckets = None
@@ -56,25 +56,11 @@ def d_table(RO, C, sa, p, alpha):
 
     return d
 
-x = "mississippi$"
-sa_dict = {"one":["mississippi", [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]]}
-sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
-rsa_dict = {"one":["mississippi", [11, 9, 0, 6, 3, 10, 2, 1, 8, 5, 7, 4]]}
- 
-p = "isi"
-alpha = {a:i for i, a in enumerate(sorted(set(x)))}
-O = o_table(sa_dict)
-C = c_table(sa_dict)
-RO = o_table(rsa_dict)
-d = d_table(RO, C, sa, p, alpha)
-
-d_table(RO, C, sa, p, alpha)
-
 def bw_approx(O, C, p, d, sa, alpha, max_edits):
     matches = None
     L, R = 0, len(sa)
     i = len(p) - 1
-    cigar = {'M': 0, 'I': 0, 'D': 0}
+    cigar = {}
     no_edits = 0
     
     # Match
@@ -82,28 +68,32 @@ def bw_approx(O, C, p, d, sa, alpha, max_edits):
         new_L = C[a] + O[int(L)][alpha[a]]
         new_R = C[a] + O[int(R)][alpha[a]]
         
-        if a == p[i]:
+        if a == p[i]: # Match or mismatch
             edit_cost = 0
         else:
             edit_cost = 1
         
         if max_edits - edit_cost < 0: continue
         if new_L >= new_R: continue
-        cigar['M'] += 1
-        matches = rec_approx(
-            d, sa, new_L, new_R, i - 1, 
-            max_edits - edit_cost, cigar, no_edits + 1)
+        
+        if 'M' not in cigar:
+            cigar['M'] = 1
+        else:
+            cigar['M'] += 1
+
+        matches = rec_approx(d, sa, new_L, new_R, i - 1, max_edits - edit_cost, cigar, no_edits + 1)
 
     # Insertion
-    cigar['I'] += 1
-    matches = rec_approx(
-        d, sa, L, R, i - 1, max_edits - 1, cigar, no_edits + 1)
+    if 'I' not in cigar:
+        cigar['I'] = 1
+    else:
+        cigar['I'] += 1
+    matches = rec_approx(d, sa, L, R, i - 1, max_edits - 1, cigar, no_edits + 1)
 
     if new_L != new_R:
         matches = sa[int(new_L):int(new_R)]
     
-    return matches
-
+    return matches, cigar
 
 def rec_approx(d, sa, L, R, i, edits_left, cigar, no_edits):
     matches = None
@@ -125,14 +115,23 @@ def rec_approx(d, sa, L, R, i, edits_left, cigar, no_edits):
         if edits_left - edit_cost < 0: continue
         if new_L >= new_R: continue
 
-        cigar['M'] += 1
+        if 'M' not in cigar:
+            cigar['M'] = 1
+        else:
+            cigar['M'] += 1
         rec_approx(d, sa, new_L, new_R, i - 1, edits_left - edit_cost, cigar, no_edits + 1)
     
-    cigar['I'] += 1
+        if 'I' not in cigar:
+            cigar['I'] = 1
+        else:
+            cigar['I'] += 1
     rec_approx(d, sa, L, R, i - 1, edits_left - 1, cigar, no_edits + 1)
 
     #  Deletion
-    cigar['D'] += 1
+    if 'D' not in cigar:
+        cigar['D'] = 1
+    else:
+        cigar['D'] += 1
     for a in list(alpha.keys())[1:]:
         new_L = C[a] + O[int(L)][alpha[a]]
         new_R = C[a] + O[int(R)][alpha[a]]
@@ -142,7 +141,19 @@ def rec_approx(d, sa, L, R, i, edits_left, cigar, no_edits):
 
     matches = sa[int(L):int(R)]
 
-    return matches
+    return matches, cigar
+
+x = "mississippi$"
+sa_dict = {"one":["mississippi", [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]]}
+rsa_dict = {"one":["mississippi", [11, 9, 0, 6, 3, 10, 2, 1, 8, 5, 7, 4]]}
+
+p = "isi"
+sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
+alpha = {a:i for i, a in enumerate(sorted(set(x)))}
+O = o_table(sa_dict)
+C = c_table(sa_dict)
+RO = o_table(rsa_dict)
+d = d_table(RO, C, sa, p, alpha)
 
 bw_approx(O, C, p, d, sa, alpha, 0)
 
@@ -172,11 +183,12 @@ def search_bw(sa, fastq, o_dict, c_dict, ro_dict):
             alpha = {a:i for i, a in enumerate(sorted(set(y)))}
             
             d = d_table(RO)
-            matches = bw_approx(O, C, d, substring, sa, alpha)
+            matches, cigars = bw_approx(O, C, d, substring, sa, alpha)
 
             if matches is not None:
-                for match in matches:
+                for match, cigar in itertools.zip_longest(matches, cigars):
                     pos = int(match) + 1
+                    cigar = ''.join([f'{value}{key}'for key, value in cigars.items()])
                     print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
     
     return 
