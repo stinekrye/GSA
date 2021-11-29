@@ -61,7 +61,6 @@ def bw_approx(O, C, p, d, sa, alpha, max_edits):
     L, R = 0, len(sa)
     i = len(p) - 1
     cigar = np.zeros(len(p)+max_edits, dtype=str)
-    no_edits = 0
     
     # Match
     c_index = 0
@@ -79,22 +78,28 @@ def bw_approx(O, C, p, d, sa, alpha, max_edits):
         if new_L >= new_R: continue
 
         cigar[c_index] = 'M'
-        return rec_approx(c_index + 1, d, sa, O, C, new_L, new_R, i - 1, max_edits - edit_cost, cigar, no_edits + 1)
+        rec_approx(
+            d, sa, O, C, cigar, new_L, new_R, 
+            i - 1, max_edits - edit_cost, c_index + 1)
         
 
     # Insertion
     cigar[c_index] = 'I'
-    return rec_approx(c_index + 1, d, sa, O, C, L, R, i - 1, max_edits - 1, cigar, no_edits + 1)
+    return rec_approx(
+        d, sa, O, C, cigar, L, R, 
+        i - 1, max_edits - 1, c_index + 1)
     
     return matches, cigar
 
-def rec_approx(c_index, d, sa, O, C, L, R, i, edits_left, cigar, no_edits):
+def rec_approx(d, sa, O, C, cigar, L, R, i, edits_left, c_index):
     lower_limit = d[i]
     if edits_left < lower_limit:
-        return None, None
+        return None
     if i < 0: # Means we have a match
         matches = sa[int(L):int(R)]
-        return matches, cigar[:c_index]
+        print(matches, cigar[:c_index])
+        return
+    
     
     for a in list(alpha.keys())[1:]:
         new_L = C[a] + O[int(L)][alpha[a]]
@@ -108,11 +113,15 @@ def rec_approx(c_index, d, sa, O, C, L, R, i, edits_left, cigar, no_edits):
         if new_L >= new_R: continue
 
         cigar[c_index] = 'M'
-        return rec_approx(c_index + 1, d, sa, O, C, new_L, new_R, i - 1, edits_left - edit_cost, cigar, no_edits + 1)
+        rec_approx(
+            d, sa, O, C, cigar, new_L, new_R, 
+            i - 1, edits_left - edit_cost, c_index + 1)
     
     # Insertion
     cigar[c_index] = 'I'
-    return rec_approx(c_index + 1, d, sa, O, C, L, R, i - 1, edits_left - 1, cigar, no_edits + 1)
+    rec_approx(
+        d, sa, O, C, cigar, L, R, 
+        i - 1, edits_left - 1, c_index + 1)
 
     #  Deletion
     cigar[c_index] = 'D'
@@ -121,17 +130,17 @@ def rec_approx(c_index, d, sa, O, C, L, R, i, edits_left, cigar, no_edits):
         new_R = C[a] + O[int(R)][alpha[a]]
         if new_L >= new_R: continue
 
-        return rec_approx(c_index + 1, d, sa, O, C, new_L, new_R, i, edits_left - 1, cigar, no_edits + 1)
+        rec_approx(
+            d, sa, O, C, cigar, new_L, new_R, 
+            i, edits_left - 1, c_index + 1)
 
-    matches = sa[int(L):int(R)]
-
-    return matches, cigar
+    return
 
 x = "mississippi$"
 sa_dict = {"one":["mississippi", [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]]}
 rsa_dict = {"one":["mississippi", [0, 10, 1, 7, 4, 11, 3, 2, 9, 6, 8, 5]]}
 
-p = "iss"
+p = "is"
 sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
 alpha = {a:i for i, a in enumerate(sorted(set(x)))}
 O = o_table(sa_dict)
@@ -139,7 +148,7 @@ C = c_table(sa_dict)
 RO = o_table(rsa_dict)
 d = d_table(RO, C, sa, p, alpha)
 
-bw_approx(O, C, p, d, sa, alpha, 0)
+bw_approx(O, C, p, d, sa, alpha, 1)
 
 def search_bw(sa, fastq, o_dict, c_dict, ro_dict):
 
