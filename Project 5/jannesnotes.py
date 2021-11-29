@@ -60,7 +60,7 @@ def bw_approx(O, C, p, d, sa, alpha, max_edits):
     matches = None
     L, R = 0, len(sa)
     i = len(p) - 1
-    cigar = {}
+    cigar = []
     no_edits = 0
     
     # Match
@@ -68,7 +68,8 @@ def bw_approx(O, C, p, d, sa, alpha, max_edits):
         new_L = C[a] + O[int(L)][alpha[a]]
         new_R = C[a] + O[int(R)][alpha[a]]
         
-        if a == p[i]: # Match or mismatch
+        # Match or mismatch
+        if a == p[i]: 
             edit_cost = 0
         else:
             edit_cost = 1
@@ -76,33 +77,22 @@ def bw_approx(O, C, p, d, sa, alpha, max_edits):
         if max_edits - edit_cost < 0: continue
         if new_L >= new_R: continue
         
-        if 'M' not in cigar:
-            cigar['M'] = 1
-        else:
-            cigar['M'] += 1
-
-        matches = rec_approx(d, sa, new_L, new_R, i - 1, max_edits - edit_cost, cigar, no_edits + 1)
+        cigar.append('1M')
+        matches, cigar = rec_approx(d, sa, new_L, new_R, i - 1, max_edits - edit_cost, cigar, no_edits + 1)
 
     # Insertion
-    if 'I' not in cigar:
-        cigar['I'] = 1
-    else:
-        cigar['I'] += 1
-    matches = rec_approx(d, sa, L, R, i - 1, max_edits - 1, cigar, no_edits + 1)
-
-    if new_L != new_R:
-        matches = sa[int(new_L):int(new_R)]
+    cigar.append('1I')
+    matches, cigar = rec_approx(d, sa, L, R, i - 1, max_edits - 1, cigar, no_edits + 1)
     
     return matches, cigar
 
 def rec_approx(d, sa, L, R, i, edits_left, cigar, no_edits):
-    matches = None
     lower_limit = d[i]
     if edits_left < lower_limit:
-        return matches
+        return None, None
     if i < 0: # Means we have a match
         matches = sa[int(L):int(R)]
-        return matches
+        return matches, cigar
     
     for a in list(alpha.keys())[1:]:
         new_L = C[a] + O[int(L)][alpha[a]]
@@ -115,23 +105,15 @@ def rec_approx(d, sa, L, R, i, edits_left, cigar, no_edits):
         if edits_left - edit_cost < 0: continue
         if new_L >= new_R: continue
 
-        if 'M' not in cigar:
-            cigar['M'] = 1
-        else:
-            cigar['M'] += 1
+        cigar.append('1M')
         rec_approx(d, sa, new_L, new_R, i - 1, edits_left - edit_cost, cigar, no_edits + 1)
     
-        if 'I' not in cigar:
-            cigar['I'] = 1
-        else:
-            cigar['I'] += 1
+    # Insertion
+    cigar.append('1I')
     rec_approx(d, sa, L, R, i - 1, edits_left - 1, cigar, no_edits + 1)
 
     #  Deletion
-    if 'D' not in cigar:
-        cigar['D'] = 1
-    else:
-        cigar['D'] += 1
+    cigar.append('1D')
     for a in list(alpha.keys())[1:]:
         new_L = C[a] + O[int(L)][alpha[a]]
         new_R = C[a] + O[int(R)][alpha[a]]
@@ -145,7 +127,7 @@ def rec_approx(d, sa, L, R, i, edits_left, cigar, no_edits):
 
 x = "mississippi$"
 sa_dict = {"one":["mississippi", [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]]}
-rsa_dict = {"one":["mississippi", [11, 9, 0, 6, 3, 10, 2, 1, 8, 5, 7, 4]]}
+rsa_dict = {"one":["mississippi", [0, 10, 1, 7, 4, 11, 3, 2, 9, 6, 8, 5]]}
 
 p = "isi"
 sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
