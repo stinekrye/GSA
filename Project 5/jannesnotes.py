@@ -42,7 +42,7 @@ def d_table(RO, C, sa, p, alpha):
     min_edits = 0
     m = len(p)
     L, R = 0, len(sa)
-    d = np.zeros(m)
+    d = np.zeros(m, dtype=int)
 
     for i in range(m):
         a = p[i]
@@ -57,13 +57,14 @@ def d_table(RO, C, sa, p, alpha):
     return d
 
 def bw_approx(O, C, p, d, sa, alpha, max_edits):
-    matches = None
+    matches = []
     L, R = 0, len(sa)
     i = len(p) - 1
-    cigar = []
+    cigar = np.zeros(len(p)+max_edits, dtype=str)
     no_edits = 0
     
     # Match
+    c_index = 0
     for a in list(alpha.keys())[1:]:
         new_L = C[a] + O[int(L)][alpha[a]]
         new_R = C[a] + O[int(R)][alpha[a]]
@@ -76,23 +77,24 @@ def bw_approx(O, C, p, d, sa, alpha, max_edits):
         
         if max_edits - edit_cost < 0: continue
         if new_L >= new_R: continue
+
+        cigar[c_index] = 'M'
+        return rec_approx(c_index + 1, d, sa, O, C, new_L, new_R, i - 1, max_edits - edit_cost, cigar, no_edits + 1)
         
-        cigar.append('1M')
-        matches, cigar = rec_approx(d, sa, new_L, new_R, i - 1, max_edits - edit_cost, cigar, no_edits + 1)
 
     # Insertion
-    cigar.append('1I')
-    matches, cigar = rec_approx(d, sa, L, R, i - 1, max_edits - 1, cigar, no_edits + 1)
+    cigar[c_index] = 'I'
+    return rec_approx(c_index + 1, d, sa, O, C, L, R, i - 1, max_edits - 1, cigar, no_edits + 1)
     
     return matches, cigar
 
-def rec_approx(d, sa, L, R, i, edits_left, cigar, no_edits):
+def rec_approx(c_index, d, sa, O, C, L, R, i, edits_left, cigar, no_edits):
     lower_limit = d[i]
     if edits_left < lower_limit:
         return None, None
     if i < 0: # Means we have a match
         matches = sa[int(L):int(R)]
-        return matches, cigar
+        return matches, cigar[:c_index]
     
     for a in list(alpha.keys())[1:]:
         new_L = C[a] + O[int(L)][alpha[a]]
@@ -105,21 +107,21 @@ def rec_approx(d, sa, L, R, i, edits_left, cigar, no_edits):
         if edits_left - edit_cost < 0: continue
         if new_L >= new_R: continue
 
-        cigar.append('1M')
-        rec_approx(d, sa, new_L, new_R, i - 1, edits_left - edit_cost, cigar, no_edits + 1)
+        cigar[c_index] = 'M'
+        return rec_approx(c_index + 1, d, sa, O, C, new_L, new_R, i - 1, edits_left - edit_cost, cigar, no_edits + 1)
     
     # Insertion
-    cigar.append('1I')
-    rec_approx(d, sa, L, R, i - 1, edits_left - 1, cigar, no_edits + 1)
+    cigar[c_index] = 'I'
+    return rec_approx(c_index + 1, d, sa, O, C, L, R, i - 1, edits_left - 1, cigar, no_edits + 1)
 
     #  Deletion
-    cigar.append('1D')
+    cigar[c_index] = 'D'
     for a in list(alpha.keys())[1:]:
         new_L = C[a] + O[int(L)][alpha[a]]
         new_R = C[a] + O[int(R)][alpha[a]]
         if new_L >= new_R: continue
 
-        rec_approx(d, sa, new_L, new_R, i, edits_left - 1, cigar, no_edits + 1)
+        return rec_approx(c_index + 1, d, sa, O, C, new_L, new_R, i, edits_left - 1, cigar, no_edits + 1)
 
     matches = sa[int(L):int(R)]
 
@@ -129,7 +131,7 @@ x = "mississippi$"
 sa_dict = {"one":["mississippi", [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]]}
 rsa_dict = {"one":["mississippi", [0, 10, 1, 7, 4, 11, 3, 2, 9, 6, 8, 5]]}
 
-p = "isi"
+p = "iss"
 sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
 alpha = {a:i for i, a in enumerate(sorted(set(x)))}
 O = o_table(sa_dict)
