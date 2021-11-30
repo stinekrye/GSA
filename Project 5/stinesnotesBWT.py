@@ -5,7 +5,6 @@ import sys, argparse, itertools
 
 def c_table(sa, seq):
     buckets = {}
-
     for i in range(0, len(sa)):
         char = seq[sa[i]]
         if char not in buckets:
@@ -104,8 +103,8 @@ def rec_approx(d, sa, O, C, cigar, L, R, i, edits_left, c_index,qname,rname,p,qu
         return None
     if i < 0:  # Means we have a match
         matches = sa[int(L):int(R)]
-        print(matches, cigar[:c_index][::-1])
-        # print_sam(matches, cigar[:c_index],qname,rname,p,qual)
+        # print(matches, cigar[:c_index][::-1])
+        print_sam(matches, cigar[:c_index],qname,rname,p,qual)
         return
 
     for a in list(alpha.keys())[1:]:
@@ -144,27 +143,27 @@ def rec_approx(d, sa, O, C, cigar, L, R, i, edits_left, c_index,qname,rname,p,qu
     return
 
 
-x = "mississippi0"
+# x = "mississippi0"
 # sa_dict = {"one":["mississippi", [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]]}
 # rsa_dict = {"one":["mississippi", [11, 9, 0, 6, 3, 10, 2, 1, 8, 5, 7, 4]}
 
 
-
-p = "is"
-sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
-rsa = [11, 9, 0, 6, 3, 10, 2, 1, 8, 5, 7, 4]
-alpha = {a:i for i, a in enumerate(sorted(set(x)))}
-O = o_table(sa, x)
-C = c_table(sa, x)
-RO = o_table(rsa, x[::-1])
-d = d_table(RO, C, sa, p, alpha)
-
-qname = p
-rname = "one"
-substring = p
-qual = "~~"
-
-bw_approx(O, C, p, d, sa, alpha, 1,qname,rname, qual)
+#
+# p = "is"
+# sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
+# rsa = [11, 9, 0, 6, 3, 10, 2, 1, 8, 5, 7, 4]
+# alpha = {a:i for i, a in enumerate(sorted(set(x)))}
+# O = o_table(sa, x)
+# C = c_table(sa, x)
+# RO = o_table(rsa, x[::-1])
+# d = d_table(RO, C, sa, p, alpha)
+#
+# qname = p
+# rname = "one"
+# substring = p
+# qual = "~~"
+#
+# bw_approx(O, C, p, d, sa, alpha, 1,qname,rname, qual)
 
 
 def search_bw(sa_dict, fastq, rsa_dict, max_edits):
@@ -193,13 +192,13 @@ def search_bw(sa_dict, fastq, rsa_dict, max_edits):
     return
 
 #
-# fastafile = parsers.read_fasta_file("fasta_test.fa")
-# fastaname = "fasta_test.fa"
-# fastq = parsers.read_fastq_file("fastq_test.fq")
-# sa_dict = parsers.read_SA("fasta_test.fa.sa")
-# rsa_dict = parsers.read_SA("fasta_test.fa.rev.sa")
-#
-# search_bw(sa_dict, fastq, rsa_dict, 0)
+fastafile = parsers.read_fasta_file("fasta_test.fa")
+fastaname = "fasta_test.fa"
+fastq = parsers.read_fastq_file("fastq_test.fq")
+sa_dict = parsers.read_SA("fasta_test.fa.sa")
+rsa_dict = parsers.read_SA("fasta_test.fa.rev.sa")
+
+search_bw(sa_dict, fastq, rsa_dict, 1)
 
 # # Creating first parser
 # parser1 = argparse.ArgumentParser(description='SA computation using SAIS')

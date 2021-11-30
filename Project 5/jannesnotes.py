@@ -97,7 +97,7 @@ def rec_approx(d, sa, O, C, cigar, L, R, i, edits_left, c_index):
         return None
     if i < 0: # Means we have a match
         matches = sa[int(L):int(R)]
-        print(matches, cigar[:c_index])
+        print(matches, cigar[:c_index][::-1])
         return
     
     
@@ -139,6 +139,8 @@ def rec_approx(d, sa, O, C, cigar, L, R, i, edits_left, c_index):
 x = "mississippi$"
 sa_dict = {"one":["mississippi", [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]]}
 rsa_dict = {"one":["mississippi", [0, 10, 1, 7, 4, 11, 3, 2, 9, 6, 8, 5]]}
+# rsa_dict = {"one":["mississippi", [11, 9, 0, 6, 3, 10, 2, 1, 8, 5, 7, 4]]}
+
 
 p = "is"
 sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
