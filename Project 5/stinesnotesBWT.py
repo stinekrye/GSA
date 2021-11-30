@@ -41,7 +41,7 @@ def d_table(RO, C, sa, p, alpha):
         a = p[i]
         L = C[a] + RO[int(L)][alpha[a]]
         R = C[a] + RO[int(R)][alpha[a]]
-        if L >= R:
+        if L > R: # remove =
             min_edits += 1
             L = 0
             R = len(sa)
@@ -54,6 +54,7 @@ def print_sam(matches, cigar,qname,rname,substring,qual):
     flag, mapq, pnext, tlen = 0, 0, 0, 0
     rnext = "*"
     cigar = ''.join(cigar)
+    cigar = cigar[::-1]
     for match in matches:
         pos = int(match) + 1
         print(
@@ -103,7 +104,8 @@ def rec_approx(d, sa, O, C, cigar, L, R, i, edits_left, c_index,qname,rname,p,qu
         return None
     if i < 0:  # Means we have a match
         matches = sa[int(L):int(R)]
-        print_sam(matches, cigar[:c_index],qname,rname,p,qual)
+        print(matches, cigar[:c_index][::-1])
+        # print_sam(matches, cigar[:c_index],qname,rname,p,qual)
         return
 
     for a in list(alpha.keys())[1:]:
@@ -144,25 +146,25 @@ def rec_approx(d, sa, O, C, cigar, L, R, i, edits_left, c_index,qname,rname,p,qu
 
 x = "mississippi0"
 # sa_dict = {"one":["mississippi", [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]]}
-# rsa_dict = {"one":["mississippi", [11, 9, 0, 3, 6, 10, 2, 1, 5, 8, 4, 7]}
+# rsa_dict = {"one":["mississippi", [11, 9, 0, 6, 3, 10, 2, 1, 8, 5, 7, 4]}
 
 
 
-# p = "is"
-# sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
-# rsa = [11, 9, 0, 3, 6, 10, 2, 1, 5, 8, 4, 7]
-# alpha = {a:i for i, a in enumerate(sorted(set(x)))}
-# O = o_table(sa, x)
-# C = c_table(sa, x)
-# RO = o_table(rsa, x[::-1])
-# d = d_table(RO, C, sa, p, alpha)
-#
-# qname = p
-# rname = "one"
-# substring = p
-# qual = "~~"
-#
-# bw_approx(O, C, p, d, sa, alpha, 1,qname,rname, qual)
+p = "is"
+sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
+rsa = [11, 9, 0, 6, 3, 10, 2, 1, 8, 5, 7, 4]
+alpha = {a:i for i, a in enumerate(sorted(set(x)))}
+O = o_table(sa, x)
+C = c_table(sa, x)
+RO = o_table(rsa, x[::-1])
+d = d_table(RO, C, sa, p, alpha)
+
+qname = p
+rname = "one"
+substring = p
+qual = "~~"
+
+bw_approx(O, C, p, d, sa, alpha, 1,qname,rname, qual)
 
 
 def search_bw(sa_dict, fastq, rsa_dict, max_edits):
@@ -190,14 +192,14 @@ def search_bw(sa_dict, fastq, rsa_dict, max_edits):
             bw_approx(O, C, substring, d, sa, alpha, max_edits, qname, rname, qual)
     return
 
-
-fastafile = parsers.read_fasta_file("fasta_test.fa")
-fastaname = "fasta_test.fa"
-fastq = parsers.read_fastq_file("fastq_test.fq")
-sa_dict = parsers.read_SA("fasta_test.fa.sa")
-rsa_dict = parsers.read_SA("revfasta_test.fa.sa")
-
-search_bw(sa_dict, fastq, rsa_dict, 0)
+#
+# fastafile = parsers.read_fasta_file("fasta_test.fa")
+# fastaname = "fasta_test.fa"
+# fastq = parsers.read_fastq_file("fastq_test.fq")
+# sa_dict = parsers.read_SA("fasta_test.fa.sa")
+# rsa_dict = parsers.read_SA("fasta_test.fa.rev.sa")
+#
+# search_bw(sa_dict, fastq, rsa_dict, 0)
 
 # # Creating first parser
 # parser1 = argparse.ArgumentParser(description='SA computation using SAIS')
