@@ -1,5 +1,5 @@
 import numpy as np
-import SAIS, parsers, sys, argparse
+import SAIS, helperpackage, sys, argparse, os
 
 def compress_cigar(string):
     res2 = np.empty(0, dtype = str)
@@ -29,75 +29,6 @@ def print_sam(matches, cigar,qname,rname,substring,qual):
         f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}",
         file=sys.stdout)
     return
-
-def c_table(sa_dict, fastaname):
-    f = open(f"{fastaname}.c-table", "w")
-    buckets = None
-
-    for key, value in sa_dict.items():
-        buckets = {}
-        sa = value[1]
-        seq = value[0] + "$"
-        
-        for i in range(0, len(sa)):
-            char = seq[sa[i]]
-            if char not in buckets:
-                buckets[char] = i
-        
-        f.write(">" + str(key) + "\n")
-        f.write(str(buckets) + "\n")
-    f.close()
-
-    return
-
-def o_table(sa_dict, fastaname, ro = False):
-    if ro == True:
-        f = open(f"{fastaname}.ro-table", "w")
-    else:
-        f = open(f"{fastaname}.o-table", "w")
-
-    for key, value in sa_dict.items():
-        sa = value[1]
-        seq = value[0] + "$"
-
-        alphabet = sorted(set(seq))
-        alphabet_size = len(alphabet)
-        n = len(sa)
-
-        O = np.zeros((n + 1, alphabet_size))
-        
-        for i in range(1, n + 1):
-            for a in range(0, alphabet_size):
-                if seq[sa[i - 1] - 1] == alphabet[a]:
-                    O[i][a] = O[i - 1][a] + 1
-                else: 
-                    O[i][a] = O[i - 1][a]
-        
-        f.write(">" + str(key) + "\n")
-        f.write(str(O.tolist()) + "\n")
-
-    f.close()
-
-    return
-
-
-def d_table(RO, C, sa, p, alpha):
-    min_edits = 0
-    m = len(p)
-    L, R = 0, len(sa)
-    d = np.zeros(m, dtype=int)
-
-    for i in range(m):
-        a = p[i]
-        L = C[a] + RO[int(L)][alpha[a]]
-        R = C[a] + RO[int(R)][alpha[a]]
-        if L > R: # remove =
-            min_edits += 1
-            L = 0
-            R = len(sa)
-        d[i] = min_edits
-
-    return d
 
 
 def bw_approx(O, C, p, d, sa, alpha, max_edits, qname, rname, qual):
@@ -201,10 +132,16 @@ def search_bw(sa_dict, rsa_dict, fastq, o_dict, c_dict, ro_dict, max_edits):
             substring = p[1][0]
             qual = p[1][1]
 
-            d = d_table(RO, C, rsa, substring, alpha)  # Consider remapping and using alpha from that
+            d = helperpackage.d_table(RO, C, rsa, substring, alpha) 
 
             bw_approx(O, C, substring, d, sa, alpha, max_edits, qname, rname, qual)
     return
+
+# Making a folder for the preprocessing files
+parent_dir = os.getcwd()
+if not os.path.exists('preprocessing'):
+    os.makedirs('preprocessing')
+p_path = os.path.join(parent_dir, 'preprocessing')
 
 # Creating first parser
 parser1 = argparse.ArgumentParser(description='SA and RSA computation using SAIS')
@@ -212,19 +149,20 @@ parser1.add_argument('-p', help='Create SA from fastafile')
 args1 = parser1.parse_known_args()
 
 if args1[0].p:
-    fastafile = parsers.read_fasta_file(args1[0].p)
+    fastafile = helperpackage.read_fasta_file(args1[0].p)
     fastaname = f"{args1[0].p}"
 
     # Make suffix array and read file
+    os.chdir(p_path)
     SAIS.gen_sa(fastafile, fastaname)
     SAIS.gen_sa(fastafile, fastaname, True)
-    sa = parsers.read_SA(f"{fastaname}.sa")
-    rsa = parsers.read_SA(f"{fastaname}.rev.sa")
+    sa = helperpackage.read_SA(f"{fastaname}.sa")
+    rsa = helperpackage.read_SA(f"{fastaname}.rev.sa")
 
     # Make C, O, and RO table
-    c_table(sa, fastaname)
-    o_table(sa, fastaname)
-    o_table(rsa, fastaname, True)
+    helperpackage.c_table(sa, fastaname)
+    helperpackage.o_table(sa, fastaname)
+    helperpackage.o_table(rsa, fastaname, True)
 
 else:
     # Creating second parser if -p is not given
@@ -235,12 +173,13 @@ else:
     args2 = parser2.parse_args()
 
     # Read in files
-    fastq = parsers.read_fastq_file(args2.fastqfile)
-    sa = parsers.read_SA(f"{args2.fastafile}.sa")
-    rsa = parsers.read_SA(f"{args2.fastafile}.rev.sa")
-    o_dict = parsers.read_o(f"{args2.fastafile}.o-table")
-    ro_dict = parsers.read_o(f"{args2.fastafile}.ro-table")
-    c_dict = parsers.read_c(f"{args2.fastafile}.c-table")
-
+    os.chdir(parent_dir)
+    fastq = helperpackage.read_fastq_file(args2.fastqfile)
+    os.chdir(p_path)
+    sa = helperpackage.read_SA(f"{args2.fastafile}.sa")
+    rsa = helperpackage.read_SA(f"{args2.fastafile}.rev.sa")
+    o_dict = helperpackage.read_o(f"{args2.fastafile}.o-table")
+    ro_dict = helperpackage.read_o(f"{args2.fastafile}.ro-table")
+    c_dict = helperpackage.read_c(f"{args2.fastafile}.c-table")
 
     search_bw(sa, rsa, fastq, o_dict, c_dict, ro_dict, args2.d)
