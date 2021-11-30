@@ -57,7 +57,6 @@ def d_table(RO, C, sa, p, alpha):
     return d
 
 def bw_approx(O, C, p, d, sa, alpha, max_edits):
-    matches = []
     L, R = 0, len(sa)
     i = len(p) - 1
     cigar = np.zeros(len(p)+max_edits, dtype=str)

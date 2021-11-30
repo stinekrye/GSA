@@ -1,5 +1,4 @@
 import numpy as np
-import parsers
 ## Helper functions
 # Optimize lms_eq and create alpha
 
@@ -15,8 +14,6 @@ def counts(seq):
     acc_sum = np.cumsum(counts)
     acc_sum = np.concatenate((np.array([0]),(acc_sum)))
     return acc_sum[:-1], len(values)
-
-
 
 # SAIS algorithm
 
@@ -40,8 +37,6 @@ def LMS_array(t_table):
         if t_table[i] == "S" and t_table[i-1] == "L":
             LMS[i] = i
     return np.nonzero(LMS)[0]
-
-
 
 ### Step 3: Helper functions
 #### Create alpha: Helper function
@@ -88,8 +83,6 @@ def create_alpha(bins,LMS,seq):
             prev = i
 
     return alpha[np.nonzero(alpha)]-1
-
-
 
 ### Step 3: sort the LMS strings
 
@@ -144,9 +137,6 @@ def LMS_order(map_LMS, LMS):
         sa_LMS[i] = nLMS[map_LMS[i]]
     return sa_LMS
 
-
-
-
 def construct_sa(seq):
     x = remap(seq)[0]
     x = np.array(list(x), dtype=int)
@@ -177,21 +167,6 @@ def gen_sa(fastadict, fastaname, reverse = False):
         SA = construct_sa(seq)
 
     # Write file
-        f.write(">" + str(key) + "\t" + str(seq) + "\n")
+        f.write(">" + str(key) + "\t" + str(value) + "\n")
         for i in range(len(SA)):
             f.write(f"{SA[i]} \n")
-
-
-
-#####
-# Find a proper way to deal with the remapping to numbers and addition of 0
-fastafile = parsers.read_fasta_file("fasta_test.fa")
-fastaname = "fasta_test.fa"
-# fastafile = parsers.read_fasta_file("debugtest.fasta")
-# fastaname = "debugtest.fasta"
-
-# fastafile = parsers.read_fasta_file("n_100000.fasta")
-# fastaname = "n_100000.fasta"
-
-res = gen_sa(fastafile,fastaname)
-
