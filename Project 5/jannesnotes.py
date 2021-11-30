@@ -48,7 +48,7 @@ def d_table(RO, C, sa, p, alpha):
         a = p[i]
         L = C[a] + RO[int(L)][alpha[a]]
         R = C[a] + RO[int(R)][alpha[a]]
-        if L >= R: 
+        if L > R: 
             min_edits += 1
             L = 0
             R = len(sa)
@@ -85,11 +85,11 @@ def bw_approx(O, C, p, d, sa, alpha, max_edits):
 
     # Insertion
     cigar[c_index] = 'I'
-    return rec_approx(
+    rec_approx(
         d, sa, O, C, cigar, L, R, 
         i - 1, max_edits - 1, c_index + 1)
     
-    return matches, cigar
+    # return matches, cigar
 
 def rec_approx(d, sa, O, C, cigar, L, R, i, edits_left, c_index):
     lower_limit = d[i]
@@ -97,9 +97,8 @@ def rec_approx(d, sa, O, C, cigar, L, R, i, edits_left, c_index):
         return None
     if i < 0: # Means we have a match
         matches = sa[int(L):int(R)]
-        print(matches, cigar[:c_index])
+        print(matches, reversed(cigar[:c_index]))
         return
-    
     
     for a in list(alpha.keys())[1:]:
         new_L = C[a] + O[int(L)][alpha[a]]

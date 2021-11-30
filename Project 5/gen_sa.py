@@ -65,7 +65,7 @@ class SuffixTree():
 
 
     def insert(self, y):
-        y = "0" + y
+        y = y + '0'
         self.seq,self.alpha = remap(y)
 
         x = 0
