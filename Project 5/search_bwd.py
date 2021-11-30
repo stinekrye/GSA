@@ -216,6 +216,34 @@ rsa_dict = parsers.read_SA("fasta_test.fa.rev.sa")
 
 search_bw(sa_dict, fastq, rsa_dict, 1)
 
+
+
+
+
+
+################# NOTES TO JANNE ####################################
+# gen_sa takes the following arguments:
+    # fastadict (output from parsers.read_fasta_file(fastafile))
+    # fastaname (name of fastafile in quotes)
+    # reverse (False by default = returns a file named "fastaname.fasta.sa"
+            # If True = returns a file named "fastaname.fasta.rev.sa"
+
+
+# Search_bw takes the following arguments:
+    # sa_dict (output from parsers.read_sa(filename)
+    # fastq (output from parsers.read_fastq_file(filename)
+    # rsa_dict (output from parsers.read_sa(filename)
+    # edit distance(max edits (here = 1)
+
+# I have changed your C and O table functions so they take two arguments:
+    # sa (suffix array for one sequence: a list called sa in the search bw function. (Is also x[1][1] ))
+    # seq (The sequece of that suffix array: a string called y in the search bw function. (Is also x[1][0]))
+
+# The change might not have been necessary, but I just couldn't get my head around it
+
+
+
+
 # # Creating first parser
 # parser1 = argparse.ArgumentParser(description='SA computation using SAIS')
 # parser1.add_argument('-p', help='Create SA from fastafile')
