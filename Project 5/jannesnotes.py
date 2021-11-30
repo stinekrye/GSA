@@ -150,7 +150,6 @@ d = d_table(RO, C, sa, p, alpha)
 
 bw_approx(O, C, p, d, sa, alpha, 1)
 
-
 def search_bw(sa, fastq, o_dict, c_dict, ro_dict):
 
     if len(sa) < 0 or len(fastq) < 0:
