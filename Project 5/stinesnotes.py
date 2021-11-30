@@ -164,7 +164,10 @@ def construct_sa(seq):
     return sorted
 
 def gen_sa(fastadict, fastaname, reverse = False):
-    f = open(f"{fastaname}.sa", "w")
+    if reverse == True:
+        f = open(f"{fastaname}.rev.sa", "w")
+    else:
+        f = open(f"{fastaname}.sa", "w")
 
     # # Generate tree, SA and LCP arrays
     for key, value in fastadict.items():
