@@ -125,17 +125,17 @@ def induced_sorting(seq, LMS, ttable, map):
         ### Create alpha
         a = create_alpha(bins,LMS,seq)
         a.size
-        if len(np.unique(a)) == len(a):
+        if a.size == 1 and a[0] == 0:
             return bins
         else:
             a_tTable = t_table(a)
             a_LMS = LMS_array(a_tTable)
-            # if len(np.unique(a_LMS)) == len(a_LMS):
-            #     return bins
-            # else:
-            return induced_sorting(a,a_LMS, a_tTable, map = True) # return or not
+            if len(np.unique(a)) == len(a):
+                return bins
+            else:
+                return induced_sorting(a,a_LMS, a_tTable, map = True)
 
-    return bins
+            return bins
 
 def LMS_order(map_LMS, LMS):
     nLMS = LMS
@@ -155,13 +155,13 @@ def construct_sa(seq):
 
     ### No prints until here ####
     map_LMS = induced_sorting(x, LMS, tTable, map=True)
-    # if len(map_LMS) == len(x):
-    #     return map_LMS
-    #
-    # else:
-    sa_LMS = LMS_order(map_LMS, LMS)
-    sorted = induced_sorting(x,sa_LMS, tTable, map = False)
-    return sorted
+    if len(map_LMS) == len(x):
+        return map_LMS
+
+    else:
+        sa_LMS = LMS_order(map_LMS, LMS)
+        sorted = induced_sorting(x,sa_LMS, tTable, map = False)
+        return sorted
 
 def gen_sa(fastadict, fastaname, reverse = False):
     f = open(f"{fastaname}.sa", "w")

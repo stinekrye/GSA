@@ -3,39 +3,30 @@ import gen_sa, parsers
 import sys, argparse, itertools
 
 
-def c_table(sa):
-    buckets = None
+def c_table(sa, seq):
+    buckets = {}
 
-    for key, value in sa.items():
-        buckets = {}
-        sa = value[1]
-        seq = value[0] + "$"
-
-        for i in range(0, len(sa)):
-            char = seq[sa[i]]
-            if char not in buckets:
-                buckets[char] = i
+    for i in range(0, len(sa)):
+        char = seq[sa[i]]
+        if char not in buckets:
+            buckets[char] = i
 
     return buckets
 
 
-def o_table(sa):
-    for key, value in sa.items():
-        sa = value[1]
-        seq = value[0] + "$"
+def o_table(sa, seq):
+    alphabet = sorted(set(seq))
+    alphabet_size = len(alphabet)
+    n = len(sa)
 
-        alphabet = sorted(set(seq))
-        alphabet_size = len(alphabet)
-        n = len(sa)
+    O = np.zeros((n + 1, alphabet_size))
 
-        O = np.zeros((n + 1, alphabet_size))
-
-        for i in range(1, n + 1):
-            for a in range(0, alphabet_size):
-                if seq[sa[i - 1] - 1] == alphabet[a]:
-                    O[i][a] = O[i - 1][a] + 1
-                else:
-                    O[i][a] = O[i - 1][a]
+    for i in range(1, n + 1):
+        for a in range(0, alphabet_size):
+            if seq[sa[i - 1] - 1] == alphabet[a]:
+                O[i][a] = O[i - 1][a] + 1
+            else:
+                O[i][a] = O[i - 1][a]
 
     return O
 
@@ -44,7 +35,7 @@ def d_table(RO, C, sa, p, alpha):
     min_edits = 0
     m = len(p)
     L, R = 0, len(sa)
-    d = np.zeros(m)
+    d = np.zeros(m, dtype=int)
 
     for i in range(m):
         a = p[i]
@@ -58,18 +49,27 @@ def d_table(RO, C, sa, p, alpha):
 
     return d
 
+def print_sam(matches, cigar,qname,rname,substring,qual):
 
-def bw_approx(O, C, p, d, sa, alpha, max_edits):
-    matches = None
+    flag, mapq, pnext, tlen = 0, 0, 0, 0
+    rnext = "*"
+    cigar = ''.join(cigar)
+    for match in matches:
+        pos = int(match) + 1
+        print(
+        f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}",
+        file=sys.stdout)
+    return
+
+
+def bw_approx(O, C, p, d, sa, alpha, max_edits,qname,rname,qual):
+    matches = []
     L, R = 0, len(sa)
     i = len(p) - 1
-    cigar = np.zeros(len(p)+max_edits, dtype = str)
-    ci = 0
-    no_edits = 0
-    string = np.zeros(len(p)+max_edits, dtype = str)
-    bwt_string = np.zeros(len(p)+max_edits, dtype = str)
+    cigar = np.zeros(len(p) + max_edits, dtype=str)
 
     # Match
+    c_index = 0
     for a in list(alpha.keys())[1:]:
         new_L = C[a] + O[int(L)][alpha[a]]
         new_R = C[a] + O[int(R)][alpha[a]]
@@ -83,34 +83,28 @@ def bw_approx(O, C, p, d, sa, alpha, max_edits):
         if max_edits - edit_cost < 0: continue
         if new_L >= new_R: continue
 
-        cigar[ci] = "M" # Change til to be generalized
-        string[ci] = p[i]
-        bwt_string[ci] = a
-        ci += 1
-        print("cigar", cigar)
-        print("pattern", string)
-        print("pattern in sa", bwt_string)
-        rec_approx(O, d, sa, new_L, new_R, i - 1, max_edits - edit_cost, cigar, no_edits + 1, ci, string, bwt_string)#
+        cigar[c_index] = 'M'
+        rec_approx(
+            d, sa, O, C, cigar, new_L, new_R,
+            i - 1, max_edits - edit_cost, c_index + 1,qname,rname,p,qual, alpha)
 
     # Insertion
-    cigar[ci] = "I"  # Change til to be generalized
-    ci += 1
-    string[ci] = p[i]
-    bwt_string[ci] = a
-    rec_approx(O, d, sa, L, R, i - 1, max_edits - 1, cigar, no_edits + 1, ci, string, bwt_string)
+    cigar[c_index] = 'I'
+    return rec_approx(
+        d, sa, O, C, cigar, L, R,
+        i - 1, max_edits - 1, c_index + 1,qname,rname,p,qual, alpha)
 
     return matches, cigar
 
 
-def rec_approx(O, d, sa, L, R, i, edits_left, cigar, no_edits, ci, string, bwt_string):
+def rec_approx(d, sa, O, C, cigar, L, R, i, edits_left, c_index,qname,rname,p,qual,alpha):
     lower_limit = d[i]
-    if edits_left < lower_limit: # The order of these have changed
-        return None, None
+    if edits_left < lower_limit:
+        return None
     if i < 0:  # Means we have a match
         matches = sa[int(L):int(R)]
-        print(matches, cigar[:ci])
+        print_sam(matches, cigar[:c_index],qname,rname,p,qual)
         return
-
 
     for a in list(alpha.keys())[1:]:
         new_L = C[a] + O[int(L)][alpha[a]]
@@ -123,87 +117,87 @@ def rec_approx(O, d, sa, L, R, i, edits_left, cigar, no_edits, ci, string, bwt_s
         if edits_left - edit_cost < 0: continue
         if new_L >= new_R: continue
 
-        cigar[ci] = "M" # Change til to be generalized
-        ci += 1
-        string[ci] = p[i]
-        bwt_string[ci] = a
-        rec_approx(O, d, sa, new_L, new_R, i - 1, edits_left - edit_cost, cigar, no_edits + 1, ci, string, bwt_string)
+        cigar[c_index] = 'M'
+        rec_approx(
+            d, sa, O, C, cigar, new_L, new_R,
+            i - 1, edits_left - edit_cost, c_index + 1,qname,rname,p,qual,alpha)
 
     # Insertion
-    cigar[ci] = "I"  # Change til to be generalized
-    ci += 1
-    string[ci] = p[i]
-    bwt_string[ci] = a
-    rec_approx(O, d, sa, L, R, i - 1, edits_left - 1, cigar, no_edits + 1, ci, string, bwt_string)
+    cigar[c_index] = 'I'
+    rec_approx(
+        d, sa, O, C, cigar, L, R,
+        i - 1, edits_left - 1, c_index + 1,qname,rname,p,qual,alpha)
 
     #  Deletion
-    cigar[ci] = "D"  # Change til to be generalized
-    ci += 1
+    cigar[c_index] = 'D'
     for a in list(alpha.keys())[1:]:
         new_L = C[a] + O[int(L)][alpha[a]]
         new_R = C[a] + O[int(R)][alpha[a]]
         if new_L >= new_R: continue
 
-        string[ci] = p[i]
-        bwt_string[ci] = a
-        rec_approx(O, d, sa, new_L, new_R, i, edits_left - 1, cigar, no_edits + 1, ci, string, bwt_string)
+        rec_approx(
+            d, sa, O, C, cigar, new_L, new_R,
+            i, edits_left - 1, c_index + 1,qname,rname,p,qual, alpha)
 
-    matches = sa[int(L):int(R)]
-
-    # return matches, cigar
+    return
 
 
-x = "mississippi$"
-sa_dict = {"one": ["mississippi", [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]]}
-rsa_dict = {"one": ["mississippi", [0, 10, 1, 7, 4, 11, 3, 2, 9, 6, 8, 5]]}
-
-p = "is"
-sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
-alpha = {a: i for i, a in enumerate(sorted(set(x)))}
-O = o_table(sa_dict)
-C = c_table(sa_dict)
-RO = o_table(rsa_dict)
-d = d_table(RO, C, sa, p, alpha)
-
-bw_approx(O, C, p, d, sa, alpha, 1)
+x = "mississippi0"
+# sa_dict = {"one":["mississippi", [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]]}
+# rsa_dict = {"one":["mississippi", [11, 9, 0, 3, 6, 10, 2, 1, 5, 8, 4, 7]}
 
 
-def search_bw(sa, fastq, o_dict, c_dict, ro_dict):
-    if len(sa) < 0 or len(fastq) < 0:
-        return "Problems with either fastq file or the SA and LCP"
 
-    flag, mapq, pnext, tlen = 0, 0, 0, 0
-    rnext = "*"
+# p = "is"
+# sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
+# rsa = [11, 9, 0, 3, 6, 10, 2, 1, 5, 8, 4, 7]
+# alpha = {a:i for i, a in enumerate(sorted(set(x)))}
+# O = o_table(sa, x)
+# C = c_table(sa, x)
+# RO = o_table(rsa, x[::-1])
+# d = d_table(RO, C, sa, p, alpha)
+#
+# qname = p
+# rname = "one"
+# substring = p
+# qual = "~~"
+#
+# bw_approx(O, C, p, d, sa, alpha, 1,qname,rname, qual)
 
-    for x in sa.items():
+
+def search_bw(sa_dict, fastq, rsa_dict, max_edits):
+    if len(sa_dict) < 0 or len(fastq) < 0:
+        return "Problems with either fastq file or the SA"
+
+    for x, z in zip(sa_dict.items(), rsa_dict.items()):
         rname = x[0]
-        y = x[1][0] + "$"
+        y = x[1][0]
         sa = x[1][1]
+        rsa = z[1][1]
 
-        O = o_dict[rname]
-        RO = ro_dict[rname]
-        C = c_dict[rname]
+        C = c_table(sa, y)
+        O = o_table(sa,y)
+        RO = o_table(rsa, y[::-1])
+        alpha = {a: i for i, a in enumerate(sorted(set(y)))}
 
         for p in fastq.items():
             qname = p[0]
             substring = p[1][0]
-            cigar = str(len(substring)) + "M"
             qual = p[1][1]
 
-            alpha = {a: i for i, a in enumerate(sorted(set(y)))}
+            d = d_table(RO, C, rsa, substring, alpha)  # Consider remapping and using alpha from that
 
-            d = d_table(RO)
-            matches, cigars = bw_approx(O, C, d, substring, sa, alpha)
-
-            if matches is not None:
-                for match, cigar in itertools.zip_longest(matches, cigars):
-                    pos = int(match) + 1
-                    cigar = ''.join([f'{value}{key}' for key, value in cigars.items()])
-                    print(
-                        f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}",
-                        file=sys.stdout)
-
+            bw_approx(O, C, substring, d, sa, alpha, max_edits, qname, rname, qual)
     return
+
+
+fastafile = parsers.read_fasta_file("fasta_test.fa")
+fastaname = "fasta_test.fa"
+fastq = parsers.read_fastq_file("fastq_test.fq")
+sa_dict = parsers.read_SA("fasta_test.fa.sa")
+rsa_dict = parsers.read_SA("revfasta_test.fa.sa")
+
+search_bw(sa_dict, fastq, rsa_dict, 0)
 
 # # Creating first parser
 # parser1 = argparse.ArgumentParser(description='SA computation using SAIS')

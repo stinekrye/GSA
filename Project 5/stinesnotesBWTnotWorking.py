@@ -100,7 +100,6 @@ def rec_approx(d, sa, O, C, cigar, L, R, i, edits_left, c_index):
     if i < 0: # Means we have a match
         matches = sa[int(L):int(R)]
         print(matches, np.flip(cigar[:c_index]))
-        return
     
     
     for a in list(alpha.keys())[1:]:
@@ -140,8 +139,8 @@ def rec_approx(d, sa, O, C, cigar, L, R, i, edits_left, c_index):
 
 x = "mississippi$"
 sa_dict = {"one":["mississippi", [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]]}
-rsa_dict = {"one":["mississippi", [0, 10, 1, 7, 4, 11, 3, 2, 9, 6, 8, 5]]}
-# rsa_dict = {"one":["mississippi", [11, 9, 0, 6, 3, 10, 2, 1, 8, 5, 7, 4]]}
+# rsa_dict = {"one":["mississippi", [0, 10, 1, 7, 4, 11, 3, 2, 9, 6, 8, 5]]}
+rsa_dict = {"one":["mississippi", [11, 9, 0, 6, 3, 10, 2, 1, 8, 5, 7, 4]]}
 
 p = "ss"
 sa = [11, 10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2]
@@ -151,20 +150,25 @@ C = c_table(sa_dict)
 RO = o_table(rsa_dict)
 d = d_table(RO, C, sa, p, alpha)
 
-# bw_approx(O, C, p, d, sa, alpha, 1)
 
-def search_bw(sa, fastq, o_dict, c_dict, ro_dict, max_edits):
+bw_approx(O, C, p, d, sa, alpha, 1)
+# test = bw_approx(O, C, p, d, sa, alpha, 1)
+# for i in test:
+#     print(i)
+
+def search_bw(sa, fastq, o_dict, c_dict, ro_dict, max_edits, rsa):
 
     if len(sa) < 0 or len(fastq) < 0:
-        return "Problems with either fastq file or the SA and LCP"
+        return "Problems with either fastq file or the SA"
 
     flag, mapq, pnext, tlen = 0,0,0,0
     rnext = "*"
 
     for x,z in zip(sa.items(), rsa.items()):
         rname = x[0]
-        y = x[1][0] + "0"
+        y = x[1][0]
         sa = x[1][1]
+        rsa = z[1][1]
 
         O = o_dict
         RO = ro_dict
@@ -179,27 +183,28 @@ def search_bw(sa, fastq, o_dict, c_dict, ro_dict, max_edits):
 
             d = d_table(RO, C, rsa, substring, alpha)  # Consider remapping and using alpha from that
 
-            matches, cigars = bw_approx(O, C, substring, d, sa, alpha, max_edits)
+            iter = bw_approx(O, C, substring, d, sa, alpha, max_edits)
 
-            if matches is not None:
-                for match, cigar in itertools.zip_longest(matches, cigars):
-                    pos = int(match) + 1
-                    cigar = ''.join([f'{value}{key}'for key, value in cigars.items()])
-                    print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
+            if iter is not None:
+                for i in iter:
+                    print(i)
+                    # pos = int(match) + 1
+                    # cigar = ''.join([f'{value}{key}'for key, value in cigars.items()])
+                    # print(f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}", file = sys.stdout)
     
     return
 
 fastafile = parsers.read_fasta_file("fasta_test.fa")
 fastaname = "fasta_test.fa"
 fastq = parsers.read_fastq_file("fastq_test.fq")
-sa = parsers.read_SA("fasta_test.fa.sa")
-rsa = parsers.read_SA("revfasta_test.fa.sa")
+sa_dict = parsers.read_SA("fasta_test.fa.sa")
+rsa_dict = parsers.read_SA("revfasta_test.fa.sa")
 
-c = c_table(sa)
-o = o_table(sa)
-ro = o_table(rsa)
+c = c_table(sa_dict)
+o = o_table(sa_dict)
+ro = o_table(rsa_dict)
 
-search_bw(sa, fastq, o, c, ro, 0)
+# search_bw(sa_dict, fastq, o, c, ro, 0, rsa_dict)
 
 
 
