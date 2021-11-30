@@ -125,17 +125,17 @@ def induced_sorting(seq, LMS, ttable, map):
         ### Create alpha
         a = create_alpha(bins,LMS,seq)
         a.size
-        if a.size == 1 and a[0] == 0:
+        if len(np.unique(a)) == len(a):
             return bins
         else:
             a_tTable = t_table(a)
             a_LMS = LMS_array(a_tTable)
-            if len(np.unique(a)) == len(a):
-                return bins
-            else:
-                induced_sorting(a,a_LMS, a_tTable, map = True)
+            # if len(np.unique(a_LMS)) == len(a_LMS):
+            #     return bins
+            # else:
+            return induced_sorting(a,a_LMS, a_tTable, map = True) # return or not
 
-            return bins
+    return bins
 
 def LMS_order(map_LMS, LMS):
     nLMS = LMS
@@ -155,23 +155,25 @@ def construct_sa(seq):
 
     ### No prints until here ####
     map_LMS = induced_sorting(x, LMS, tTable, map=True)
-    if len(map_LMS) == len(x):
-        return map_LMS
-
-    else:
-        sa_LMS = LMS_order(map_LMS, LMS)
-        sorted = induced_sorting(x,sa_LMS, tTable, map = False)
-        return sorted
+    # if len(map_LMS) == len(x):
+    #     return map_LMS
+    #
+    # else:
+    sa_LMS = LMS_order(map_LMS, LMS)
+    sorted = induced_sorting(x,sa_LMS, tTable, map = False)
+    return sorted
 
 def gen_sa(fastadict, fastaname, reverse = False):
-    f = open(f"{fastaname}.sa", "w")
+    if reverse == True:
+        f = open(f"{fastaname}.rev.sa", "w")
+    else:
+        f = open(f"{fastaname}.sa", "w")
 
     # # Generate tree, SA and LCP arrays
     for key, value in fastadict.items():
-        seq = value+"0" # Find a better way to do this
         if reverse == True:
-            seq = reverse(seq)
-
+            value = value[::-1]
+        seq = value+"0" # Find a better way to do this
         SA = construct_sa(seq)
 
     # Write file
@@ -183,10 +185,10 @@ def gen_sa(fastadict, fastaname, reverse = False):
 
 #####
 # Find a proper way to deal with the remapping to numbers and addition of 0
-# fastafile = parsers.read_fasta_file("fasta_test.fa")
-# fastaname = "fasta_test.fa"
-fastafile = parsers.read_fasta_file("debugtest.fasta")
-fastaname = "debugtest.fasta"
+fastafile = parsers.read_fasta_file("fasta_test.fa")
+fastaname = "fasta_test.fa"
+# fastafile = parsers.read_fasta_file("debugtest.fasta")
+# fastaname = "debugtest.fasta"
 
 # fastafile = parsers.read_fasta_file("n_100000.fasta")
 # fastaname = "n_100000.fasta"
