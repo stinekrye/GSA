@@ -2,6 +2,36 @@ import numpy as np
 import gen_sa, parsers
 import sys, argparse, itertools
 
+def compress_cigar(string):
+    res2 = np.empty(0, dtype = str)
+    count = 1
+
+    for i in range(len(string)-1):
+        if string[i] == string[i+1]:
+            count += 1
+        else:
+            res2 = np.append(res2, str(count))
+            res2 = np.append(res2, string[i])
+            count = 1
+    res2 = np.append(res2, str(count))
+    res2 = np.append(res2, string[i+1])
+    return "".join(res2)
+
+def print_sam(matches, cigar,qname,rname,substring,qual):
+
+    flag, mapq, pnext, tlen = 0, 0, 0, 0
+    rnext = "*"
+    cigar = ''.join(cigar)
+    cigar = cigar[::-1]
+    cigar = compress_cigar(cigar)
+    for match in matches:
+        pos = int(match) + 1
+        print(
+        f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}",
+        file=sys.stdout)
+    return
+
+
 
 def c_table(sa, seq):
     buckets = {}
@@ -48,19 +78,6 @@ def d_table(RO, C, sa, p, alpha):
 
     return d
 
-def print_sam(matches, cigar,qname,rname,substring,qual):
-
-    flag, mapq, pnext, tlen = 0, 0, 0, 0
-    rnext = "*"
-    cigar = ''.join(cigar)
-    cigar = cigar[::-1]
-    for match in matches:
-        pos = int(match) + 1
-        print(
-        f"{qname}\t{flag}\t{rname}\t{pos}\t{mapq}\t{cigar}\t{rnext}\t{pnext}\t{tlen}\t{substring}\t{qual}",
-        file=sys.stdout)
-    return
-
 
 def bw_approx(O, C, p, d, sa, alpha, max_edits,qname,rname,qual):
     matches = []
@@ -94,7 +111,6 @@ def bw_approx(O, C, p, d, sa, alpha, max_edits,qname,rname,qual):
         d, sa, O, C, cigar, L, R,
         i - 1, max_edits - 1, c_index + 1,qname,rname,p,qual, alpha)
 
-    return matches, cigar
 
 
 def rec_approx(d, sa, O, C, cigar, L, R, i, edits_left, c_index,qname,rname,p,qual,alpha):
