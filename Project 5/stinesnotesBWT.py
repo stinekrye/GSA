@@ -1,5 +1,5 @@
 import numpy as np
-import SAIS_old, helperpackage, sys, argparse, os
+import SAIS, helperpackage, sys, argparse, os
 
 def compress_cigar(string):
     res2 = np.empty(0, dtype = str)
@@ -136,14 +136,6 @@ def search_bw(sa_dict, rsa_dict, fastq, o_dict, c_dict, ro_dict, max_edits):
 
             bw_approx(O, C, substring, d, sa, alpha, max_edits, qname, rname, qual)
     return
-
-fastafile = parsers.read_fasta_file("ref.fa")
-fastaname = "ref.fa"
-fastq = parsers.read_fastq_file("fastq_test.fq")
-sa_dict = parsers.read_SA("fasta_test.fa.sa")
-rsa_dict = parsers.read_SA("fasta_test.fa.rev.sa")
-
-search_bw(sa_dict, fastq, rsa_dict, 1)
 
 #
 #

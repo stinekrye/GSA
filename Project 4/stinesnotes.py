@@ -102,16 +102,16 @@ def search_bs(sa, fastq):
 
 
 
-# # Make test on large files
-fasta = parsers.read_fasta_file(f"test_files/fasta_test.fa")
-fastq = parsers.read_fastq_file(f"test_files/fastq_test.fq")
-sa = parsers.read_SA_LCP(f"test_files/fasta_test.fa.sa-lcp")
+# # # Make test on large files
+# fasta = parsers.read_fasta_file(f"test_files/fasta_test.fa")
+# fastq = parsers.read_fastq_file(f"test_files/fastq_test.fq")
+# sa = parsers.read_SA_LCP(f"test_files/fasta_test.fa.sa-lcp")
+# # #
+# # # p = "ISGS"
+# # # x = "MISSISSIPPI"
+# # # sa = [11,10,7,4,1,0,9,8,6,3,5,2]
 # #
-# # p = "ISGS"
-# # x = "MISSISSIPPI"
-# # sa = [11,10,7,4,1,0,9,8,6,3,5,2]
-#
-# # res = binary3(p,x,sa)
-# # print(res)
-# #
-search_bs(sa, fastq)
+# # # res = binary3(p,x,sa)
+# # # print(res)
+# # #
+# search_bs(sa, fastq)
