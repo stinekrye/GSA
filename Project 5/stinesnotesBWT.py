@@ -1,6 +1,7 @@
 import numpy as np
-import gen_sa, parsers
-import sys, argparse, itertools
+from Project_1 import parsers
+import sys
+
 
 def compress_cigar(string):
     res2 = np.empty(0, dtype = str)
