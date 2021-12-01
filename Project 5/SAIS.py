@@ -158,10 +158,10 @@ def gen_sa(fastadict, fastaname, reverse = False):
         for i in range(len(SA)):
             f.write(f"{SA[i]} \n")
 
-fastadict = helperpackage.read_fasta_file("ref.fa")
-fastaname = "ref.fa"
-
-# fastadict = helperpackage.read_fasta_file("fasta_test.fa")
-# fastaname = "fasta_test.fa"
-
-gen_sa(fastadict, fastaname)
+# fastadict = helperpackage.read_fasta_file("ref.fa")
+# fastaname = "ref.fa"
+#
+# # fastadict = helperpackage.read_fasta_file("fasta_test.fa")
+# # fastaname = "fasta_test.fa"
+#
+# gen_sa(fastadict, fastaname)
