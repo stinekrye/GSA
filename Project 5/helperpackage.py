@@ -15,6 +15,7 @@ def read_fasta_file(filename):
             if line.startswith(';') or not line:
                 continue
             if line.startswith('>'):
+                line = line.replace(" ", "")
                 sequence_name = line.lstrip('>')
                 current_sequence_lines = []
                 sequences_lines[sequence_name] = current_sequence_lines
@@ -56,6 +57,7 @@ def read_SA(file):
             if line.startswith('SA') or not line:
                 continue
             if line.startswith('>'):
+                line = line.replace(" ", "")
                 line = line.split()
                 sequence_name = line[0].lstrip('>')
                 sequence = line[1]
