@@ -1,5 +1,4 @@
 import numpy as np
-import helperpackage
 ## Helper functions
 # Optimize lms_eq and create alpha
 
@@ -87,7 +86,7 @@ def create_alpha(bins,LMS,seq):
 
 ### Step 3: sort the LMS strings
 
-def induced_sorting(seq, LMS, ttable):
+def induced_sorting(seq, LMS, ttable, map):
     bins = np.zeros([len(seq)], dtype=int)
     bin_start, counter_len = counts(seq) # The sequence is remapped so the index = the remapped letter
 
@@ -114,29 +113,45 @@ def induced_sorting(seq, LMS, ttable):
             bins[location] = int(i-1)
             counter[seq[int(i-1)]] += 1
 
+
+    if map == True:
+        ### Create alpha
+        a = create_alpha(bins,LMS,seq)
+        a.size
+        if len(np.unique(a)) == len(a):
+            return bins
+        else:
+            a_tTable = t_table(a)
+            a_LMS = LMS_array(a_tTable)
+            # if len(np.unique(a_LMS)) == len(a_LMS):
+            #     return bins
+            # else:
+            return induced_sorting(a,a_LMS, a_tTable, map = True) # return or not
+
     return bins
 
-def SAIS(seq):
-    if len(np.unique(seq)) == len(seq):
-        bins = np.zeros((len(seq)), dtype = int)
+def LMS_order(map_LMS, LMS):
+    nLMS = LMS
+    sa_LMS = np.zeros([len(nLMS)], dtype= int)
+    for i in range(len(map_LMS)):
+        sa_LMS[i] = nLMS[map_LMS[i]]
+    return sa_LMS
 
-        for i, b in enumerate(seq):
-            bins[b] = i
+def construct_sa(seq):
+    x = remap(seq)[0]
+    x = np.array(list(x), dtype=int)
+    tTable = t_table(x)
+    LMS = LMS_array(tTable)
 
-    else:
-        tTable = t_table(seq)
-        LMS = LMS_array(tTable)
-        bins = induced_sorting(seq, LMS, tTable)
-        u = create_alpha(bins, LMS, seq)  # The other way arround?
-        bins = SAIS(u) # return or not
-
-        sorted_LMS = np.zeros((len(LMS)), dtype = int)
-        for i in range(len(LMS)):
-            sorted_LMS[i] = LMS[bins[i]]
-
-        bins = induced_sorting(seq, sorted_LMS, tTable)
-    return bins
-
+    ### No prints until here ####
+    map_LMS = induced_sorting(x, LMS, tTable, map=True)
+    # if len(map_LMS) == len(x):
+    #     return map_LMS
+    #
+    # else:
+    sa_LMS = LMS_order(map_LMS, LMS)
+    sorted = induced_sorting(x,sa_LMS, tTable, map = False)
+    return sorted
 
 def gen_sa(fastadict, fastaname, reverse = False):
     if reverse == True:
@@ -149,19 +164,9 @@ def gen_sa(fastadict, fastaname, reverse = False):
         if reverse == True:
             value = value[::-1]
         seq = value+"0" # Find a better way to do this
-        seq = remap(seq)[0]
-        seq = np.array(list(seq), dtype=int)
-        SA = SAIS(seq)
+        SA = construct_sa(seq)
 
     # Write file
         f.write(">" + str(key) + "\t" + str(value) + "\n")
         for i in range(len(SA)):
             f.write(f"{SA[i]} \n")
-
-fastadict = helperpackage.read_fasta_file("ref.fa")
-fastaname = "ref.fa"
-
-# fastadict = helperpackage.read_fasta_file("fasta_test.fa")
-# fastaname = "fasta_test.fa"
-
-gen_sa(fastadict, fastaname)

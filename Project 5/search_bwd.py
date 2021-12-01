@@ -1,5 +1,5 @@
 import numpy as np
-import SAIS, helperpackage, sys, argparse, os
+import SAIS_old, helperpackage, sys, argparse, os
 
 def compress_cigar(string):
     res2 = np.empty(0, dtype = str)
@@ -154,8 +154,8 @@ if args1[0].p:
 
     # Make suffix array and read file
     os.chdir(p_path)
-    SAIS.gen_sa(fastafile, fastaname)
-    SAIS.gen_sa(fastafile, fastaname, True)
+    SAIS_old.gen_sa(fastafile, fastaname)
+    SAIS_old.gen_sa(fastafile, fastaname, True)
     sa = helperpackage.read_SA(f"{fastaname}.sa")
     rsa = helperpackage.read_SA(f"{fastaname}.rev.sa")
 

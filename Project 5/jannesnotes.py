@@ -1,6 +1,5 @@
 import numpy as np
-import gen_sa, parsers
-import sys, argparse, itertools
+import sys, itertools
 
 def c_table(sa):
     buckets = None
