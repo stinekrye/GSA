@@ -59,7 +59,7 @@ def lms_eq(lms1,lms2,seq, LMS): # Will break of it gets two identical LMS sequen
     ## Compare the sequences of the LMS strings
     else:
         i = 0
-        while i < len(lms1_end-lms1):
+        while i < lms1_end-lms1:
             if seq[lms1 + i] != seq[lms2 + i]:
                 return False
             i += 1
@@ -68,20 +68,18 @@ def lms_eq(lms1,lms2,seq, LMS): # Will break of it gets two identical LMS sequen
 def create_alpha(bins,LMS,seq):
     alpha = np.zeros([len(bins)], dtype = int)
     a = 1
-    first = True
-    for i in bins:
-        if first:
-            if i in LMS:
-                first = False
-                alpha[i] = a
-                prev = i
+
+    ### First is a special case ###
+    alpha[LMS[-1]] = 1
+    prev = LMS[-1]
 
 
-        elif i in LMS:
-            if not lms_eq(i,prev,seq, LMS):# function to compare two strings
+    for i in range(1,len(bins)):
+        if bins[i] in LMS:
+            if not lms_eq(bins[i],prev,seq, LMS):# function to compare two strings
                 a += 1
-            alpha[i] = a
-            prev = i
+            alpha[bins[i]] = a
+            prev = bins[i]
 
     return alpha[np.nonzero(alpha)]-1
 
